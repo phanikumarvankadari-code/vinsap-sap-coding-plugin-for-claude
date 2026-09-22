@@ -1,6 +1,6 @@
 ---
 name: config-manager
-description: Use for /vinsap:config — creates/updates .sdlc/config.json with connector setup, product scope, prerequisites, diagram tool, review model tiers, and screenshot mode.
+description: Use for /vinsap:config — creates/updates .sdlc/config.json with connector setup, product scope, prerequisites, diagram tool, review model tiers, screenshot mode, and git usage.
 ---
 
 # Config Manager
@@ -27,14 +27,15 @@ Follow `../_shared/context-contract.md` for read/write conventions.
   "diagram_tool": "drawio",
   "review": { "quick_model": "haiku", "deep_model": "opus" },
   "documentation": { "screenshot_mode": "auto" },
-  "handoff": { "destination": "file" }
+  "handoff": { "destination": "file" },
+  "git": { "enabled": false }
 }
 ```
 
 ## Steps
 
 1. Read the existing `.sdlc/config.json` if present; show the user what's already set vs. what's still missing.
-2. Ask for missing values conversationally, grouped by section (connectors, products, prerequisites, deployment mode, diagram tool, model tiers, screenshot mode, handoff default) — don't ask everything as one giant form.
+2. Ask for missing values conversationally, grouped by section (connectors, products, prerequisites, deployment mode, diagram tool, model tiers, screenshot mode, git usage, handoff default) — don't ask everything as one giant form.
 3. Re-run the prerequisite check from `onboarding-guide/references/prerequisites.md` if the user wants to change tooling.
 4. Write the merged config back to `.sdlc/config.json`.
 5. Append a `.sdlc/timeline.jsonl` entry summarizing what changed.
@@ -49,6 +50,15 @@ Ask the user to choose `sap.deployment_mode`:
 `sap.deployment_mode` is read by `abap-developer` on every `/vinsap:develop` run — surface which mode is active before generating code so the user isn't surprised by whether something landed in the system or just on disk.
 
 `sap.default_package` here is only a **suggested default** — it does not silently decide the package or transport for a milestone. When `deployment_mode` is `mcp`, `abap-developer` asks the user for the package (defaulting to `sap.default_package`) and, via `adt_list_transports`, offers a selection of the currently open/modifiable transports on the target system to reuse — or lets the user choose to create a new one — rather than assuming. See `abap-developer/references/transport-guidelines.md` §2/§2a.
+
+## Git usage
+
+Ask the user whether this project should track its VinSAP artifacts (`inputs/`, `outputs/`, `.sdlc/`) in git — set `git.enabled` accordingly:
+
+- **`true`** — `.sdlc`, `input-analyzer`, `doc-generator`, etc. commit meaningful changes as they go (e.g. after `/vinsap:milestones`, each `/vinsap:develop`, `/vinsap:docs`), giving a real commit history alongside `.sdlc/timeline.jsonl`. Requires the Git CLI — see `onboarding-guide/references/prerequisites.md`.
+- **`false`** (default) — no git activity from the plugin; `.sdlc/timeline.jsonl` remains the only history.
+
+This is about **local project tracking** of VinSAP's own working files, not the SAP-side ABAP transport/`$TMP` workflow (already handled in `abap-developer/references/transport-guidelines.md`) and not gCTS/git-enabled ABAP repos (the `adt_*_git_repo` tools) — those are separate concerns this plugin doesn't currently manage.
 
 ## SAP system discovery (not static)
 

@@ -43,3 +43,7 @@ One JSON object per line:
 ## First-write behavior
 
 If `.sdlc/` does not exist yet when a skill runs, create it (this normally happens on `/vinsap:onboard`, but any skill run standalone should still be resilient to a missing folder rather than erroring).
+
+## Git tracking (optional, per `.sdlc/config.json` → `git.enabled`)
+
+If `git.enabled` is `true`, after writing a meaningful change to `inputs/`, `outputs/`, or `.sdlc/`, stage and commit it with a short descriptive message (e.g. `git commit -m "vinsap: milestone M2 developed"`). If `git.enabled` is `false` or unset, skip this entirely — don't touch git. Never push, never force anything, never touch branches other than the current one — this is local commit-as-you-go only, not a release/deploy action.

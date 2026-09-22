@@ -28,6 +28,7 @@ It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension
 |---|---|
 | [Claude Code CLI](https://docs.claude.com/claude-code) | Runs the plugin |
 | Node.js ≥ 18 | Playwright, doc tooling |
+| Git CLI *(only if `git.enabled` is on)* | Tracks `inputs/`, `outputs/`, `.sdlc/` in version control. macOS: `brew install git` · Windows: [git-scm.com](https://git-scm.com/download/win) (or `winget install --id Git.Git`) |
 | [Playwright](https://playwright.dev/docs/intro) | Fiori/UI5 e2e test generation — `npm install -D playwright && npx playwright install` (same command on Windows and macOS) |
 | Python 3 | Runs the SAP MCP guardrail hook |
 | draw.io (desktop app + CLI) | Architecture/process diagrams — default `diagram_tool`. macOS: `brew install --cask drawio` (or [drawio.com](https://www.drawio.com/)) · Windows: [installer from GitHub releases](https://github.com/jgraph/drawio-desktop/releases) |
@@ -94,6 +95,7 @@ Creates/updates `.sdlc/config.json`:
 - **Review model tiers** — cheap/fast model for `/vinsap:review`, a smarter model for `/vinsap:deep-review`
 - **Screenshot mode** — `auto` (Playwright captures in the background) or `manual` (you supply screenshots)
 - **Handoff destination default** — Confluence, Jira comment, or file (always confirmable/overridable at runtime)
+- **Git usage** — whether to track `inputs/`, `outputs/`, `.sdlc/` in git as the pipeline runs (off by default, requires the Git CLI if enabled)
 
 </details>
 
@@ -218,7 +220,8 @@ your-project/
   "diagram_tool": "drawio",
   "review": { "quick_model": "haiku", "deep_model": "opus" },
   "documentation": { "screenshot_mode": "auto" },
-  "handoff": { "destination": "file" }
+  "handoff": { "destination": "file" },
+  "git": { "enabled": false }
 }
 ```
 
