@@ -59,26 +59,9 @@ It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension
 
 ## The pipeline, at a glance
 
-```mermaid
-flowchart TD
-    A["/vinsap:onboard · /vinsap:init"] --> B["/vinsap:config"]
-    B --> C["/vinsap:analyze · /vinsap:scope · /vinsap:start"]
-    C --> D["/vinsap:milestones"]
-    D --> E{"/vinsap:develop"}
-    E -->|ABAP| F[abap-developer skill]
-    E -->|Fiori/UI| G[fiori-developer skill]
-    F --> H["/vinsap:review"]
-    G --> H
-    H --> I["/vinsap:test"]
-    I -->|fail: internal auto-fix + re-test, capped retries| I
-    I -->|still failing after cap: flagged blocked| U["ask the user"]
-    U --> E
-    I -->|pass| J["/vinsap:deep-review"]
-    J --> K["/vinsap:docs"]
+![VinSAP plugin pipeline](assets/process-flow.jpeg)
 
-    S["/vinsap:status"]-. callable anytime .-> D
-    O["/vinsap:handoff"]-. callable anytime .-> D
-```
+`/vinsap:test` failures loop internally (auto-fix + re-test) up to a retry cap before flagging the milestone back to `/vinsap:develop` for the user to weigh in — `/vinsap:status` and `/vinsap:handoff` are callable at any point, not just at the phase boundaries shown.
 
 ## Commands
 

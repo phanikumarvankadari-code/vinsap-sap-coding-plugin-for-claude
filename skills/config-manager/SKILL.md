@@ -48,6 +48,8 @@ Ask the user to choose `sap.deployment_mode`:
 
 `sap.deployment_mode` is read by `abap-developer` on every `/vinsap:develop` run — surface which mode is active before generating code so the user isn't surprised by whether something landed in the system or just on disk.
 
+`sap.default_package` here is only a **suggested default** — it does not silently decide the package or transport for a milestone. When `deployment_mode` is `mcp`, `abap-developer` asks the user for the package (defaulting to `sap.default_package`) and, via `adt_list_transports`, offers a selection of the currently open/modifiable transports on the target system to reuse — or lets the user choose to create a new one — rather than assuming. See `abap-developer/references/transport-guidelines.md` §2/§2a.
+
 ## SAP system discovery (not static)
 
 The Vincit SAP MCP is **not** declared in this plugin's `.mcp.json` — each system's server (`vincit-abap-mcp-<SID>`) is connected globally, per system, outside the plugin (VS Code extension), before `/vinsap:config` even runs. Don't hardcode server names.

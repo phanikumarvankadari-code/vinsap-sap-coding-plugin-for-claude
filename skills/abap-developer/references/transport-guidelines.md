@@ -6,7 +6,9 @@ Source: Vincit `GUIDELINES_RELEASE.md`. Folded into `abap-developer` (no separat
    `[AI-VSP] <MODULE> | <TICKET_ID> | <Short Description>`
    Example: `[AI-VSP] FI | TICKET-1204 | Add customer name to layout`
 
-2. **Check Before Creating** — before invoking `adt_create_transport`, always call `adt_list_transports` to verify whether an open, eligible transport matching the `[AI-VSP]` signature already exists for this task. If it does, reuse it.
+2. **Ask, don't assume** — before invoking `adt_create_transport`, always call `adt_list_transports` for the target system and package. Present the user with the open, modifiable transports found (highlighting any already matching the `[AI-VSP]` signature for this ticket) and let them choose: reuse one of the listed transports, or create a new one. Never silently auto-select a transport on the user's behalf.
+
+2a. **Package** — likewise, don't assume `$TMP`. Ask the user which package to target (default suggestion: `sap.default_package` from `.sdlc/config.json`, or `$TMP` if unset), respecting `abap-developer/references/package-hierarchy.md` once the object is ready to leave `$TMP`.
 
 3. **Stage Locally First** — develop new logic inside local objects (`$TMP`) using local scratchpads first. Only transfer code to a transportable package (`adt_create_object` / `adt_write_source`) after verifying it compiles cleanly (`adt_syntax_check`).
 
