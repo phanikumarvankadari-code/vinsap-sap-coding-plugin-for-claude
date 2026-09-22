@@ -1,14 +1,15 @@
 # Prerequisites
 
-| Tool | Why VinSAP needs it | Check | Install |
-|---|---|---|---|
-| Node.js | Runs Claude Code, Playwright, doc-generation tooling | `node --version` (>=18) | https://nodejs.org |
-| Claude Code CLI | Runs the plugin itself | `claude --version` | https://docs.claude.com/claude-code |
-| Git CLI *(only if `git.enabled` is on)* | Tracks `inputs/`, `outputs/`, `.sdlc/` for this project in version control | `git --version` | macOS: `brew install git` (or already present via `xcode-select --install`) · Windows: https://git-scm.com/download/win (or `winget install --id Git.Git`) |
-| Playwright | Fiori/UI5 e2e test generation and execution | `npx playwright --version` | Same command on both OSes: `npm install -D playwright && npx playwright install` — docs: https://playwright.dev/docs/intro (Windows: run from PowerShell/cmd; macOS: run from Terminal — no OS-specific install steps beyond Node.js being present) |
-| draw.io (desktop app + CLI) | Architecture/process diagrams via the `illustrator` skill (default `diagram_tool`) — the desktop app ships a headless CLI mode used to export `.drawio` files to SVG/PNG | `drawio --version` | macOS: `brew install --cask drawio`, or direct download from https://www.drawio.com/ · Windows: installer (`.exe`) from https://github.com/jgraph/drawio-desktop/releases (the `drawio` CLI binary ships inside the desktop app install on both OSes) |
-| Atlassian MCP | Jira/Confluence connector | check with `/mcp` inside Claude Code — should list `atlassian` as connected | Already declared in this plugin's `.mcp.json` (remote server, no separate package install) — first use triggers a browser OAuth prompt to authorize your Atlassian account. Claude Code MCP docs: https://code.claude.com/docs/en/mcp |
-| antigravity CLI (optional) | Only needed if configured as the diagram/image-generation tool instead of draw.io/mermaid | project-specific | ask the user for their install source — this is not a standard public tool |
+| Tool | Why VinSAP needs it | Check | Install | Learn more |
+|---|---|---|---|---|
+| Node.js | Runs Claude Code, Playwright, doc-generation tooling | `node --version` (>=18) | https://nodejs.org | Getting-started guide: https://nodejs.org/en/learn/getting-started/introduction-to-nodejs |
+| Claude Code CLI | Runs the plugin itself | `claude --version` | https://docs.claude.com/claude-code | Install + quickstart: https://docs.claude.com/en/docs/claude-code/quickstart · Full docs: https://docs.claude.com/en/docs/claude-code/overview |
+| Git CLI *(only if `git.enabled` is on)* | Tracks `inputs/`, `outputs/`, `.sdlc/` for this project in version control | `git --version` | macOS: `brew install git` (or already present via `xcode-select --install`) · Windows: https://git-scm.com/download/win (or `winget install --id Git.Git`) | Understanding git itself: https://git-scm.com/book/en/v2 (Pro Git, free) or https://docs.github.com/en/get-started/using-git/about-git |
+| GitHub CLI (`gh`) *(optional)* | Handy if this project's VinSAP artifacts live in a GitHub repo (PRs, issues, gists) alongside plain `git` | `gh --version` | macOS: `brew install gh` · Windows: https://cli.github.com (installer) or `winget install --id GitHub.cli` | https://cli.github.com/manual |
+| Playwright | Fiori/UI5 e2e test generation and execution | `npx playwright --version` | Same command on both OSes: `npm install -D playwright && npx playwright install` — docs: https://playwright.dev/docs/intro (Windows: run from PowerShell/cmd; macOS: run from Terminal — no OS-specific install steps beyond Node.js being present) | Writing/running tests: https://playwright.dev/docs/writing-tests · Test generator (`npx playwright codegen`): https://playwright.dev/docs/codegen |
+| draw.io (desktop app + CLI) | Architecture/process diagrams via the `illustrator` skill (default `diagram_tool`) — the desktop app ships a headless CLI mode used to export `.drawio` files to SVG/PNG | `drawio --version` | macOS: `brew install --cask drawio`, or direct download from https://www.drawio.com/ · Windows: installer (`.exe`) from https://github.com/jgraph/drawio-desktop/releases (the `drawio` CLI binary ships inside the desktop app install on both OSes) | |
+| Atlassian MCP | Jira/Confluence connector | check with `/mcp` inside Claude Code — should list `atlassian` as connected | Already declared in this plugin's `.mcp.json` (remote server, no separate package install) — first use triggers a browser OAuth prompt to authorize your Atlassian account. Claude Code MCP docs: https://code.claude.com/docs/en/mcp | |
+| antigravity CLI (optional) | Only needed if configured as the diagram/image-generation tool instead of draw.io/mermaid | project-specific | ask the user for their install source — this is not a standard public tool | |
 
 ## Flow
 
@@ -18,3 +19,4 @@
 4. draw.io is only required if `/vinsap:config`'s `diagram_tool` is `drawio` (the default) — if the user sets it to `mermaid` instead, skip this check.
 5. antigravity CLI is only required if `/vinsap:config` sets it as the diagram tool — skip checking it otherwise.
 6. Git CLI is only required if `/vinsap:config`'s `git.enabled` is `true` — skip this check when git tracking is off.
+7. GitHub CLI is always optional — never block onboarding on it, just mention it's available if the user's remote is GitHub.

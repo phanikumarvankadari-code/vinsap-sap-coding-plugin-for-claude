@@ -24,17 +24,18 @@ It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension
 
 ## Prerequisites
 
-| Tool | Why |
-|---|---|
-| [Claude Code CLI](https://docs.claude.com/claude-code) | Runs the plugin |
-| Node.js ≥ 18 | Playwright, doc tooling |
-| Git CLI *(only if `git.enabled` is on)* | Tracks `inputs/`, `outputs/`, `.sdlc/` in version control. macOS: `brew install git` · Windows: [git-scm.com](https://git-scm.com/download/win) (or `winget install --id Git.Git`) |
-| [Playwright](https://playwright.dev/docs/intro) | Fiori/UI5 e2e test generation — `npm install -D playwright && npx playwright install` (same command on Windows and macOS) |
-| Python 3 | Runs the SAP MCP guardrail hook |
-| draw.io (desktop app + CLI) | Architecture/process diagrams — default `diagram_tool`. macOS: `brew install --cask drawio` (or [drawio.com](https://www.drawio.com/)) · Windows: [installer from GitHub releases](https://github.com/jgraph/drawio-desktop/releases) |
-| Vincit SAP MCP (VS Code extension) | Per-system SAP access — connect this **before** `/vinsap:config` |
-| [Atlassian MCP](https://code.claude.com/docs/en/mcp) | Jira/Confluence connector — already declared in `.mcp.json`, first use just needs a browser OAuth authorization |
-| antigravity CLI *(optional)* | Only needed if configured as the diagram/image-generation tool instead of draw.io/mermaid |
+| Tool | Why | Learn more |
+|---|---|---|
+| [Claude Code CLI](https://docs.claude.com/claude-code) | Runs the plugin | [Quickstart](https://docs.claude.com/en/docs/claude-code/quickstart) · [Full docs](https://docs.claude.com/en/docs/claude-code/overview) |
+| Node.js ≥ 18 | Playwright, doc tooling | [Getting started with Node.js](https://nodejs.org/en/learn/getting-started/introduction-to-nodejs) |
+| Git CLI *(only if `git.enabled` is on)* | Tracks `inputs/`, `outputs/`, `.sdlc/` in version control. macOS: `brew install git` · Windows: [git-scm.com](https://git-scm.com/download/win) (or `winget install --id Git.Git`) | [Pro Git book](https://git-scm.com/book/en/v2) (free) · [GitHub's git basics](https://docs.github.com/en/get-started/using-git/about-git) |
+| GitHub CLI (`gh`) *(optional)* | Handy for PRs/issues alongside plain `git`, if this repo lives on GitHub. macOS: `brew install gh` · Windows: [cli.github.com](https://cli.github.com) or `winget install --id GitHub.cli` | [`gh` manual](https://cli.github.com/manual) |
+| [Playwright](https://playwright.dev/docs/intro) | Fiori/UI5 e2e test generation — `npm install -D playwright && npx playwright install` (same command on Windows and macOS) | [Writing tests](https://playwright.dev/docs/writing-tests) · [Codegen](https://playwright.dev/docs/codegen) |
+| Python 3 | Runs the SAP MCP guardrail hook | |
+| draw.io (desktop app + CLI) | Architecture/process diagrams — default `diagram_tool`. macOS: `brew install --cask drawio` (or [drawio.com](https://www.drawio.com/)) · Windows: [installer from GitHub releases](https://github.com/jgraph/drawio-desktop/releases) | |
+| Vincit SAP MCP (VS Code extension) | Per-system SAP access — connect this **before** `/vinsap:config` | |
+| [Atlassian MCP](https://code.claude.com/docs/en/mcp) | Jira/Confluence connector — already declared in `.mcp.json`, first use just needs a browser OAuth authorization | |
+| antigravity CLI *(optional)* | Only needed if configured as the diagram/image-generation tool instead of draw.io/mermaid | |
 
 `/vinsap:onboard` (alias `/vinsap:init`) checks these and offers install guidance for anything missing.
 
