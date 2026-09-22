@@ -9,17 +9,19 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 
 ## Fields to manage in `.sdlc/config.json`
 
+`sap` is **top-level**, a sibling of `connectors` — not nested inside it. This is the authoritative shape: `hooks/guard_sap_mcp.py::find_system_mode()` reads `config["sap"]["systems"]` directly, so it must match exactly.
+
 ```json
 {
   "connectors": {
-    "atlassian": { "site": "", "jira_project_keys": [], "confluence_space": "" },
-    "sap": {
-      "systems": {
-        "DEV": { "mcp_server": "vincit-abap-mcp-S4H", "mode": "dev" }
-      },
-      "default_package": "$TMP",
-      "deployment_mode": "mcp"
-    }
+    "atlassian": { "site": "", "jira_project_keys": [], "confluence_space": "" }
+  },
+  "sap": {
+    "systems": {
+      "DEV": { "mcp_server": "vincit-abap-mcp-S4H", "mode": "dev" }
+    },
+    "default_package": "$TMP",
+    "deployment_mode": "mcp"
   },
   "products": ["FIN", "SLS", "SRC", "MFG", "SCM", "HCM", "AST", "SVC", "CORE"],
   "diagram_tool": "drawio",

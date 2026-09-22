@@ -1,6 +1,6 @@
 ---
 name: onboarding-guide
-description: Use for /vinsap:onboard — checks prerequisites, guides installs, sets the input source (Jira vs manual), and creates the inputs/ folder structure. First-touch skill for a new VinSAP engagement.
+description: Use for /vinsap:onboard (alias /vinsap:init) — checks prerequisites, guides installs, sets the input source (Jira vs manual), and creates the inputs/ folder structure. First-touch skill for a new VinSAP engagement.
 ---
 
 # Onboarding Guide

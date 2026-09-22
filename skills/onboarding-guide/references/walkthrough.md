@@ -2,7 +2,7 @@
 
 Run through this with the user at the end of `/vinsap:onboard`, briefly — this is an orientation, not a full manual.
 
-1. **`/vinsap:onboard`** (you're here) — set input source, create `inputs/` structure.
+1. **`/vinsap:onboard`** (you're here — alias `/vinsap:init`) — set input source, create `inputs/` structure.
 2. **`/vinsap:config`** — set up connectors (Jira/Confluence, SAP MCP), product scope, diagram tool, model tiers, screenshot mode.
 3. **`/vinsap:analyze`** (aka `/vinsap:scope`, `/vinsap:start`) — reads `inputs/`, asks clarifying questions, writes `outputs/scope.md`.
 4. **`/vinsap:milestones`** — breaks the scope into milestones, tagged ABAP/Fiori/mixed.

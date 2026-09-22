@@ -1,5 +1,5 @@
 ---
-description: Choose input source (Jira ticket vs manual drop) and set up the inputs/ folder for this SDLC engagement.
+description: Choose input source (Jira ticket vs manual drop) and set up the inputs/ folder for this SDLC engagement. Alias: /vinsap:init.
 ---
 
 Invoke the `onboarding-guide` skill.
@@ -9,3 +9,5 @@ Invoke the `onboarding-guide` skill.
 3. Create the `inputs/` folder structure if it does not already exist: `inputs/docs/`, `inputs/emails/`, `inputs/conversations/`, `inputs/jira/`. If pulling from Jira, fetch the ticket (description, comments, attachments) into `inputs/jira/`.
 4. Run the walkthrough tutorial from `references/walkthrough.md`, pointing the user to `/vinsap:config` next.
 5. Append an entry to `.sdlc/timeline.jsonl` and update `.sdlc/state.json` (create if absent) marking the `onboard` stage complete.
+
+This command is aliased as `/vinsap:init` — identical behavior.
