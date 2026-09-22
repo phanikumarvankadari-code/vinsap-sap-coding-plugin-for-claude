@@ -32,7 +32,7 @@ It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension
 | Python 3 | Runs the SAP MCP guardrail hook |
 | draw.io (desktop app + CLI) | Architecture/process diagrams — default `diagram_tool`. macOS: `brew install --cask drawio` (or [drawio.com](https://www.drawio.com/)) · Windows: [installer from GitHub releases](https://github.com/jgraph/drawio-desktop/releases) |
 | Vincit SAP MCP (VS Code extension) | Per-system SAP access — connect this **before** `/vinsap:config` |
-| [Atlassian MCP](https://support.atlassian.com/rovo/docs/setting-up-the-atlassian-remote-mcp-server/) | Jira/Confluence connector — already declared in `.mcp.json`, first use just needs a browser OAuth authorization |
+| [Atlassian MCP](https://code.claude.com/docs/en/mcp) | Jira/Confluence connector — already declared in `.mcp.json`, first use just needs a browser OAuth authorization |
 | antigravity CLI *(optional)* | Only needed if configured as the diagram/image-generation tool instead of draw.io/mermaid |
 
 `/vinsap:onboard` (alias `/vinsap:init`) checks these and offers install guidance for anything missing.
