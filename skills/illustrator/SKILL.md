@@ -17,7 +17,7 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 1. Determine what the diagram needs to show (architecture, process flow As-Is/To-Be, milestone dependency) and which document/context it's for.
 2. Check `.sdlc/config.json` for the configured tool; default to draw.io for anything destined for a formal document.
 3. Apply `references/illustration-guidelines.md` — simple, single-concept, consistently styled, fully labeled.
-4. For draw.io: build the diagram using `references/drawio-theme/` styling; export in the format the destination document needs (embed-ready image or draw.io native file, per what `doc-generator` requests).
+4. For draw.io: build the `.drawio` file using `references/drawio-theme/` styling, then export via the headless `drawio` CLI (ships with the desktop app — see `onboarding-guide/references/prerequisites.md`), e.g. `drawio -x -f svg -o output.svg diagram.drawio`, in the format the destination document needs (embed-ready image or the native `.drawio` file, per what `doc-generator` requests). If `drawio` isn't installed, tell the user and fall back to mermaid rather than failing silently.
 5. For mermaid: use a pattern from `references/mermaid-patterns.md`, adapt to the specific content.
 6. Return the diagram to the calling skill (`doc-generator` or `milestone-planner`) — this skill does not decide where the diagram is used, only how it's built.
 

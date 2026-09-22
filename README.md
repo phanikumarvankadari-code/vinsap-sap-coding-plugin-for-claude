@@ -30,6 +30,7 @@ It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension
 | Node.js ≥ 18 | Playwright, doc tooling |
 | [Playwright](https://playwright.dev) | Fiori/UI5 e2e test generation |
 | Python 3 | Runs the SAP MCP guardrail hook |
+| draw.io (desktop app + CLI) | Architecture/process diagrams — default `diagram_tool`. macOS: `brew install --cask drawio` · Windows/Linux: [drawio.com](https://www.drawio.com/) |
 | Vincit SAP MCP (VS Code extension) | Per-system SAP access — connect this **before** `/vinsap:config` |
 | Atlassian MCP | Jira/Confluence connector |
 | antigravity CLI *(optional)* | Only needed if configured as the diagram/image-generation tool instead of draw.io/mermaid |
