@@ -1,0 +1,9 @@
+{
+  "name": "vinsap",
+  "version": "0.1.0",
+  "description": "VinSAP — ABAP/SAP SDLC automation for Vincit: onboarding, scoping, milestone planning, ABAP/Fiori development with auto-generated tests, code review, testing, and documentation, with a persistent audit trail for handoff.",
+  "author": {
+    "name": "Vincit"
+  },
+  "hooks": "./hooks/hooks.json"
+}

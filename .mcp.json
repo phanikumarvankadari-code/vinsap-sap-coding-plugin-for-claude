@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "atlassian": {
+      "description": "Jira + Confluence access for ticket ingestion and doc/handoff publishing. Configure the site and credentials via /vinsap:config.",
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/sse"
+    }
+  }
+}
