@@ -13,7 +13,7 @@ Every VinSAP skill follows this contract for where it reads and writes, so the p
 
 - `outputs/<stage>/` — this skill's own output (e.g. `outputs/reviews/`, `outputs/docs/`, `outputs/handoff/`)
 - `.sdlc/state.json` — update stage/milestone status whenever it changes
-- `.sdlc/timeline.jsonl` — **append** (never overwrite) an entry after every meaningful action, not only at stage completion
+- `.sdlc/timeline.jsonl` — **append** (never overwrite) an entry after every meaningful action, not only at stage completion. If `git.enabled` is `true`, each append is immediately followed by a commit — see "Git tracking" below.
 
 ## `.sdlc/timeline.jsonl` entry shape
 
@@ -46,4 +46,11 @@ If `.sdlc/` does not exist yet when a skill runs, create it (this normally happe
 
 ## Git tracking (optional, per `.sdlc/config.json` → `git.enabled`)
 
-If `git.enabled` is `true`, after writing a meaningful change to `inputs/`, `outputs/`, or `.sdlc/`, stage and commit it with a short descriptive message (e.g. `git commit -m "vinsap: milestone M2 developed"`). If `git.enabled` is `false` or unset, skip this entirely — don't touch git. Never push, never force anything, never touch branches other than the current one — this is local commit-as-you-go only, not a release/deploy action.
+If `git.enabled` is `true`, **every `.sdlc/timeline.jsonl` append gets a matching git commit** — 1:1, not a separate judgment call about what counts as "meaningful." Immediately after appending the timeline entry:
+
+1. `git add -A` (or scope it to `inputs/`, `outputs/`, `.sdlc/`, whatever the action actually touched)
+2. `git commit -m "vinsap(<stage>): <summary>"` — reuse the timeline entry's own `summary` field as the commit message body, prefixed with the stage (e.g. `vinsap(develop): Created ZCL_SLS_OSOSTK_DISCOUNT with rate calculation logic`)
+
+This keeps `timeline.jsonl` and `git log` as two views of the exact same history — `git log` gives diffs per step, `timeline.jsonl` gives the structured/queryable record `/vinsap:status` and `/vinsap:handoff` read.
+
+If `git.enabled` is `false` or unset, skip this entirely — don't touch git. Never push, never force anything, never touch branches other than the current one — this is local commit-as-you-go only, not a release/deploy action. If a commit fails (e.g. nothing staged, or a hook rejects it), don't retry destructively — surface it and move on, the timeline entry itself already recorded the action.

@@ -95,7 +95,7 @@ Creates/updates `.sdlc/config.json`:
 - **Review model tiers** — cheap/fast model for `/vinsap:review`, a smarter model for `/vinsap:deep-review`
 - **Screenshot mode** — `auto` (Playwright captures in the background) or `manual` (you supply screenshots)
 - **Handoff destination default** — Confluence, Jira comment, or file (always confirmable/overridable at runtime)
-- **Git usage** — whether to track `inputs/`, `outputs/`, `.sdlc/` in git as the pipeline runs (off by default, requires the Git CLI if enabled)
+- **Git usage** — whether every `.sdlc/timeline.jsonl` entry also gets a matching git commit, 1:1 (off by default, requires the Git CLI if enabled)
 
 </details>
 

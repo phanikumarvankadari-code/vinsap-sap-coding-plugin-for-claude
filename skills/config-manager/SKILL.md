@@ -55,7 +55,7 @@ Ask the user to choose `sap.deployment_mode`:
 
 Ask the user whether this project should track its VinSAP artifacts (`inputs/`, `outputs/`, `.sdlc/`) in git — set `git.enabled` accordingly:
 
-- **`true`** — `.sdlc`, `input-analyzer`, `doc-generator`, etc. commit meaningful changes as they go (e.g. after `/vinsap:milestones`, each `/vinsap:develop`, `/vinsap:docs`), giving a real commit history alongside `.sdlc/timeline.jsonl`. Requires the Git CLI — see `onboarding-guide/references/prerequisites.md`.
+- **`true`** — every `.sdlc/timeline.jsonl` append gets a matching git commit, 1:1 (see `_shared/context-contract.md` → "Git tracking"). `git log` and the timeline become two views of the same history. Requires the Git CLI — see `onboarding-guide/references/prerequisites.md`.
 - **`false`** (default) — no git activity from the plugin; `.sdlc/timeline.jsonl` remains the only history.
 
 This is about **local project tracking** of VinSAP's own working files, not the SAP-side ABAP transport/`$TMP` workflow (already handled in `abap-developer/references/transport-guidelines.md`) and not gCTS/git-enabled ABAP repos (the `adt_*_git_repo` tools) — those are separate concerns this plugin doesn't currently manage.
