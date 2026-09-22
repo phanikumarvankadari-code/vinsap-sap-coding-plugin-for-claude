@@ -44,6 +44,14 @@ It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension
 /plugin install vinsap
 ```
 
+You'll be asked to pick an install scope:
+
+| Scope | Significance |
+|---|---|
+| **User** | Available in every project you open, just for you. |
+| **Project** | Installed for everyone who works in this repo. |
+| **Local** (this repo only) | Just you, and only inside this one repo. |
+
 ## Onboarding, first run
 
 ```
