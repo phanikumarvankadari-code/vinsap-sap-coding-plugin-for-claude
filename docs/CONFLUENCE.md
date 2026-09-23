@@ -11,7 +11,7 @@ It connects to SAP through the **Vincit SAP MCP** (a VS Code extension, connecte
 ## Prerequisites
 
 - **Claude Code CLI** — runs the plugin. [Quickstart](https://docs.claude.com/en/docs/claude-code/quickstart)
-- **Node.js ≥ 18** — [Getting started](https://nodejs.org/en/learn/getting-started/introduction-to-nodejs)
+- **Node.js ≥ 18** — [Download](https://nodejs.org/en/download) · [Getting started](https://nodejs.org/en/learn/getting-started/introduction-to-nodejs)
 - **Git CLI** *(optional — only if git tracking is turned on in config)* — [Pro Git book](https://git-scm.com/book/en/v2)
 - **GitHub CLI (`gh`)** *(optional)* — [manual](https://cli.github.com/manual)
 - **Playwright** — Fiori/UI5 e2e testing. [Writing tests](https://playwright.dev/docs/writing-tests)

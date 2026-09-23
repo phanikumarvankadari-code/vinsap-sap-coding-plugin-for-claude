@@ -2,7 +2,7 @@
 
 | Tool | Why VinSAP needs it | Check | Install | Learn more |
 |---|---|---|---|---|
-| Node.js | Runs Claude Code, Playwright, doc-generation tooling | `node --version` (>=18) | https://nodejs.org | Getting-started guide: https://nodejs.org/en/learn/getting-started/introduction-to-nodejs |
+| Node.js | Runs Claude Code, Playwright, doc-generation tooling | `node --version` (>=18) | https://nodejs.org/en/download | Getting-started guide: https://nodejs.org/en/learn/getting-started/introduction-to-nodejs |
 | Claude Code CLI | Runs the plugin itself | `claude --version` | https://docs.claude.com/claude-code | Install + quickstart: https://docs.claude.com/en/docs/claude-code/quickstart · Full docs: https://docs.claude.com/en/docs/claude-code/overview |
 | Git CLI *(only if `git.enabled` is on)* | Tracks `tickets/`, `.sdlc/` for this project in version control | `git --version` | macOS: `brew install git` (or already present via `xcode-select --install`) · Windows: https://git-scm.com/download/win (or `winget install --id Git.Git`) | Understanding git itself: https://git-scm.com/book/en/v2 (Pro Git, free) or https://docs.github.com/en/get-started/using-git/about-git |
 | GitHub CLI (`gh`) *(optional)* | Handy if this project's VinSAP artifacts live in a GitHub repo (PRs, issues, gists) alongside plain `git` | `gh --version` | macOS: `brew install gh` · Windows: https://cli.github.com (installer) or `winget install --id GitHub.cli` | https://cli.github.com/manual |
