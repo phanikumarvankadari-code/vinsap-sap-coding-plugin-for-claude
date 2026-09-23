@@ -22,7 +22,7 @@ Follow `../_shared/context-contract.md` for read/write conventions.
    - Request diagrams from the `illustrator` skill wherever a section calls for one (architecture, process flow).
 5. Flag the drafted document for **UX review** before finalizing — surface it to the user explicitly as a review checkpoint, don't silently mark it done.
 6. Save the filled document to `outputs/docs/`.
-7. Ask whether to publish to **Confluence** via the `atlassian` MCP connector:
+7. Ask whether to publish to **Confluence** via the `mcp-atlassian` MCP connector:
    - Create a new page, or update an existing one (search/select).
    - Attach the generated file to that page.
 8. For the Test document, follow `.sdlc/config.json` → `documentation.screenshot_mode`:

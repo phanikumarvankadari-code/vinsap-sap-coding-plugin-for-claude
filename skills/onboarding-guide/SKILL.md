@@ -10,7 +10,7 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 ## Steps
 
 1. **Prerequisite check** — see `references/prerequisites.md`. Check Node.js, Claude Code CLI, Playwright, and (if the project will use it) antigravity CLI. Report what's present/missing; offer install guidance for anything missing rather than failing silently.
-2. **Input source** — ask the user: pull the linked Jira ticket via the `atlassian` MCP connector, or manually drop files into `inputs/`.
+2. **Input source** — ask the user: pull the linked Jira ticket via the `mcp-atlassian` MCP connector, or manually drop files into `inputs/`.
    - If Jira: fetch the ticket's description, comments, and attachments into `inputs/jira/<TICKET-ID>/`.
    - If manual: tell the user exactly where to drop files (`inputs/docs/`, `inputs/emails/`, `inputs/conversations/`).
 3. **Create folder structure** if not already present:

@@ -9,7 +9,7 @@
 
 VinSAP automates the SAP/ABAP development lifecycle end-to-end inside Claude Code: gathering requirements (Jira tickets, docs, emails, conversations), scoping, milestone planning, ABAP/Fiori development with auto-generated tests, code review, testing, and documentation — with a persistent audit trail so work can be handed off or resumed without losing context.
 
-It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension, connected per system) and to Jira/Confluence through an **Atlassian MCP** connector. A shipped hook (`hooks/guard_sap_mcp.py`) mechanically enforces system-mode rules (dev/quality/production) and SQL guardrails on every SAP call — independent of what the model decides to do.
+It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension, connected per system) and to Jira/Confluence through **[mcp-atlassian](https://github.com/sooperset/mcp-atlassian)** (run via `uvx`). A shipped hook (`hooks/guard_sap_mcp.py`) mechanically enforces system-mode rules (dev/quality/production) and SQL guardrails on every SAP call — independent of what the model decides to do.
 
 ## Contents
 
@@ -34,7 +34,8 @@ It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension
 | Python 3 | Runs the SAP MCP guardrail hook | |
 | draw.io (desktop app + CLI) | Architecture/process diagrams — default `diagram_tool`. macOS: `brew install --cask drawio` (or [drawio.com](https://www.drawio.com/)) · Windows: [installer from GitHub releases](https://github.com/jgraph/drawio-desktop/releases) | |
 | Vincit SAP MCP (VS Code extension) | Per-system SAP access — connect this **before** `/vinsap:config` | |
-| [Atlassian MCP](https://code.claude.com/docs/en/mcp) | Jira/Confluence connector — already declared in `.mcp.json`, first use just needs a browser OAuth authorization | |
+| `uv`/`uvx` | Launches the `mcp-atlassian` connector. macOS: `brew install uv` · Windows: [docs.astral.sh/uv](https://docs.astral.sh/uv/getting-started/installation/) | [uv docs](https://docs.astral.sh/uv/) |
+| [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) | Jira/Confluence connector, already declared in `.mcp.json` (launched via `uvx`). Non-secret settings come from `/vinsap:config`; **API tokens are set as environment variables, never stored in any config file** | [Claude Code MCP docs](https://code.claude.com/docs/en/mcp) |
 | antigravity CLI *(optional)* | Only needed if configured as the diagram/image-generation tool instead of draw.io/mermaid | |
 
 `/vinsap:onboard` (alias `/vinsap:init`) checks these and offers install guidance for anything missing.
@@ -79,7 +80,7 @@ You'll be asked to pick an install scope:
 <details>
 <summary><b>/vinsap:onboard</b> <sub>(alias <code>/vinsap:init</code>)</sub> — choose input source, set up <code>inputs/</code></summary>
 
-Checks prerequisites and offers install guidance. Asks whether inputs come from a **Jira ticket** (pulled via the Atlassian MCP into `inputs/jira/`) or a **manual drop** into `inputs/docs/`, `inputs/emails/`, `inputs/conversations/`. Creates the folder structure if it doesn't exist yet, then runs a short walkthrough pointing you to `/vinsap:config` next.
+Checks prerequisites and offers install guidance. Asks whether inputs come from a **Jira ticket** (pulled via `mcp-atlassian` into `inputs/jira/`) or a **manual drop** into `inputs/docs/`, `inputs/emails/`, `inputs/conversations/`. Creates the folder structure if it doesn't exist yet, then runs a short walkthrough pointing you to `/vinsap:config` next.
 
 </details>
 
@@ -88,7 +89,7 @@ Checks prerequisites and offers install guidance. Asks whether inputs come from 
 
 Creates/updates `.sdlc/config.json`:
 
-- **Connectors** — Atlassian MCP (Jira project keys, Confluence space)
+- **Connectors** — `mcp-atlassian` (Jira URL/username/project filter, Confluence URL/username/space filter, read-only mode). Non-secret only — API tokens are set as environment variables, never stored in config.
 - **SAP systems** — discovers currently-connected `vincit-abap-mcp-*` servers and asks you to map each to a role (`DEV`/`QA`/`PRD`/custom) and a **mode** (`dev`/`quality`/`production`). Server names are never hardcoded — they're connected globally per system, outside the plugin.
 - **Deployment mode** — `mcp` (push/activate/transport directly) or `manual` (generate code + an instruction sheet for you to apply via ADT)
 - **Products/modules** — solution-area codes in scope (`FIN`, `SLS`, `SRC`, `MFG`, `SCM`, `HCM`, `AST`, `SVC`, `CORE`)
@@ -205,10 +206,20 @@ your-project/
 
 ## Configuration reference (`.sdlc/config.json`)
 
+Only non-secret settings live here. `JIRA_API_TOKEN` and `CONFLUENCE_API_TOKEN` are set as real environment variables on your machine and referenced by `.mcp.json` as `${VAR}` placeholders — never written to this file or committed anywhere.
+
 ```json
 {
   "connectors": {
-    "atlassian": { "site": "", "jira_project_keys": [], "confluence_space": "" }
+    "mcp-atlassian": {
+      "jira_url": "",
+      "jira_username": "",
+      "jira_projects_filter": "",
+      "confluence_url": "",
+      "confluence_username": "",
+      "confluence_spaces_filter": "",
+      "read_only_mode": false
+    }
   },
   "sap": {
     "systems": {

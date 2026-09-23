@@ -1,9 +1,20 @@
 {
   "mcpServers": {
-    "atlassian": {
-      "description": "Jira + Confluence access for ticket ingestion and doc/handoff publishing. Configure the site and credentials via /vinsap:config.",
-      "type": "http",
-      "url": "https://mcp.atlassian.com/v1/sse"
+    "mcp-atlassian": {
+      "description": "Jira + Confluence access (sooperset/mcp-atlassian, run via uvx) for ticket ingestion and doc/handoff publishing. Non-secret fields (URLs, usernames, project/space filters) come from /vinsap:config → .sdlc/config.json. API tokens are NEVER stored in config or committed files — set JIRA_API_TOKEN and CONFLUENCE_API_TOKEN as real environment variables in your own shell/profile; the ${VAR} placeholders below are resolved from your environment at launch, not from this file.",
+      "command": "uvx",
+      "args": ["mcp-atlassian"],
+      "env": {
+        "JIRA_URL": "${VINSAP_JIRA_URL}",
+        "JIRA_USERNAME": "${VINSAP_JIRA_USERNAME}",
+        "JIRA_API_TOKEN": "${JIRA_API_TOKEN}",
+        "JIRA_PROJECTS_FILTER": "${VINSAP_JIRA_PROJECTS_FILTER}",
+        "CONFLUENCE_URL": "${VINSAP_CONFLUENCE_URL}",
+        "CONFLUENCE_USERNAME": "${VINSAP_CONFLUENCE_USERNAME}",
+        "CONFLUENCE_API_TOKEN": "${CONFLUENCE_API_TOKEN}",
+        "CONFLUENCE_SPACES_FILTER": "${VINSAP_CONFLUENCE_SPACES_FILTER}",
+        "READ_ONLY_MODE": "${VINSAP_ATLASSIAN_READ_ONLY_MODE}"
+      }
     }
   }
 }

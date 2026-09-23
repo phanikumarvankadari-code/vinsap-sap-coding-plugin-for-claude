@@ -4,7 +4,7 @@ description: Set up connectors, product/module scope, prerequisites, and prefere
 
 Invoke the `config-manager` skill to create or update `.sdlc/config.json`:
 
-- **Connectors** — Atlassian MCP (Jira project key(s), Confluence space), Vincit SAP MCP `vincit-abap-mcp-<SID>` (a VS Code extension hosting the MCP server — system landscape DEV/QA/PRD, client, package defaults).
+- **Connectors** — `mcp-atlassian` (Jira URL/username/project filter, Confluence URL/username/space filter, read-only mode — non-secret fields only; API tokens are set as environment variables, never stored in config), Vincit SAP MCP `vincit-abap-mcp-<SID>` (a VS Code extension hosting the MCP server — system landscape DEV/QA/PRD, client, package defaults).
 - **Deployment mode** — `mcp` (push/activate/transport directly through the SAP MCP connector) or `manual` (generate code + instructions, user applies via ADT themselves).
 - **Products/modules** — solution-area codes in scope: `FIN`, `SLS`, `SRC`, `MFG`, `SCM`, `HCM`, `AST`, `SVC`, `CORE`.
 - **Prerequisites** — confirm/re-check Node.js, Claude Code CLI, Playwright, antigravity CLI; offer install guidance for anything missing.

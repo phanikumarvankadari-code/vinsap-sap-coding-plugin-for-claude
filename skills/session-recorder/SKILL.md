@@ -18,9 +18,9 @@ Follow `../_shared/context-contract.md` for read/write conventions.
    - Open items/blockers
    - Follow `doc-generator/references/writing-style.md` — simple English, bullets over paragraphs
 3. Ask the user where it should go, offering `handoff.destination` from `.sdlc/config.json` as the default but always confirming/allowing override:
-   - **Jira ticket comment** — via `atlassian` MCP, post to the linked ticket
+   - **Jira ticket comment** — via `mcp-atlassian` MCP, post to the linked ticket
    - **Standalone markdown file** — save to `outputs/handoff/<timestamp>-handoff.md`
-   - **Confluence page** — via `atlassian` MCP, create new or update existing, if configured
+   - **Confluence page** — via `mcp-atlassian` MCP, create new or update existing, if configured
 4. Append a `.sdlc/timeline.jsonl` entry recording that a handoff was produced (`action: "handoff_created"`).
 
 ## Notes
