@@ -56,7 +56,7 @@ You'll be asked to pick an install scope:
 | **Project** | Installed for everyone who works in this repo. |
 | **Local** (this repo only) | Just you, and only inside this one repo. |
 
-**Claude Code desktop app?** Install exactly as above — same plugin system. Note: the plain **Claude Desktop** consumer app is different and doesn't support plugins (skills, hooks, commands) at all, only raw MCP servers — you'd lose the entire VinSAP workflow there. Use Claude Code (CLI, desktop, web, or IDE extension).
+**On the Claude desktop app**, use the **Claude Code** tab/side, not the regular Chat tab — install exactly as above there. Chat doesn't support plugins (skills, hooks, commands) at all, only raw MCP servers — you'd lose the entire VinSAP workflow there.
 
 ## Onboarding
 
