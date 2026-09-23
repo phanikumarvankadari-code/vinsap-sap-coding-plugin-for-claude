@@ -13,7 +13,7 @@
 
 ## Test Results Summary
 
-- <pass/fail summary, pulled from `.sdlc/state.json` / `.sdlc/timeline.jsonl`>
+- <pass/fail summary, pulled from `tickets/<active>/state.json` / `tickets/<active>/timeline.jsonl`>
 
 ## Test Case Details
 

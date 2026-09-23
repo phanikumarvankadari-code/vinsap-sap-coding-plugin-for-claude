@@ -15,11 +15,11 @@ It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension
 
 - [Prerequisites](#prerequisites)
 - [Installing](#installing)
-- [Onboarding](#onboarding-first-run)
+- [Onboarding](#onboarding)
 - [The pipeline, at a glance](#the-pipeline-at-a-glance)
 - [Commands](#commands)
 - [System modes and guardrails](#system-modes-and-guardrails)
-- [Project layout](#project-layout-created-by-vinsaponboard)
+- [Project layout](#project-layout)
 - [Configuration reference](#configuration-reference-sdlcconfigjson)
 
 ## Prerequisites
@@ -28,7 +28,7 @@ It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension
 |---|---|---|
 | [Claude Code CLI](https://docs.claude.com/claude-code) | Runs the plugin | [Quickstart](https://docs.claude.com/en/docs/claude-code/quickstart) · [Full docs](https://docs.claude.com/en/docs/claude-code/overview) |
 | Node.js ≥ 18 | Playwright, doc tooling | [Getting started with Node.js](https://nodejs.org/en/learn/getting-started/introduction-to-nodejs) |
-| Git CLI *(only if `git.enabled` is on)* | Tracks `inputs/`, `outputs/`, `.sdlc/` in version control. macOS: `brew install git` · Windows: [git-scm.com](https://git-scm.com/download/win) (or `winget install --id Git.Git`) | [Pro Git book](https://git-scm.com/book/en/v2) (free) · [GitHub's git basics](https://docs.github.com/en/get-started/using-git/about-git) |
+| Git CLI *(only if `git.enabled` is on)* | Tracks `tickets/`, `.sdlc/` in version control. macOS: `brew install git` · Windows: [git-scm.com](https://git-scm.com/download/win) (or `winget install --id Git.Git`) | [Pro Git book](https://git-scm.com/book/en/v2) (free) · [GitHub's git basics](https://docs.github.com/en/get-started/using-git/about-git) |
 | GitHub CLI (`gh`) *(optional)* | Handy for PRs/issues alongside plain `git`, if this repo lives on GitHub. macOS: `brew install gh` · Windows: [cli.github.com](https://cli.github.com) or `winget install --id GitHub.cli` | [`gh` manual](https://cli.github.com/manual) |
 | [Playwright](https://playwright.dev/docs/intro) | Fiori/UI5 e2e test generation — `npm install -D playwright && npx playwright install` (same command on Windows and macOS) | [Writing tests](https://playwright.dev/docs/writing-tests) · [Codegen](https://playwright.dev/docs/codegen) |
 | Python 3 | Runs the SAP MCP guardrail hook | |
@@ -55,11 +55,21 @@ You'll be asked to pick an install scope:
 | **Project** | Installed for everyone who works in this repo. |
 | **Local** (this repo only) | Just you, and only inside this one repo. |
 
-## Onboarding, first run
+## Onboarding
+
+VinSAP works across **many tickets in one project**. Setup is two-phase: connectors/systems/preferences are configured **once** for the whole project; everything else — inputs, scope, milestones, code, tests, docs, history — is scoped **per ticket** under `tickets/<TICKET-ID>/`, and the whole pipeline below repeats for every new ticket.
+
+**Once, project-level:**
 
 ```
-/vinsap:onboard          # or /vinsap:init — same thing
-/vinsap:config           # connectors, system modes, deployment mode, review model tiers
+/vinsap:onboard          # or /vinsap:init — first run just does prereqs
+/vinsap:config           # connectors, system modes, deployment mode, review model tiers — shared by every ticket
+```
+
+**Per ticket — repeat this whole flow for each one:**
+
+```
+/vinsap:onboard          # this time: starts a new ticket, creates tickets/<ID>/, sets it active
 /vinsap:analyze          # or /vinsap:scope, /vinsap:start
 /vinsap:milestones
 /vinsap:develop  → /vinsap:review → /vinsap:test    (repeat per milestone until green)
@@ -67,7 +77,7 @@ You'll be asked to pick an install scope:
 /vinsap:docs
 ```
 
-`/vinsap:status` and `/vinsap:handoff` work at any point in this sequence, not just at the end.
+`/vinsap:status` and `/vinsap:handoff` work at any point, on the active ticket. `/vinsap:switch <TICKET-ID>` jumps back to a ticket you already started, without re-onboarding it.
 
 ## The pipeline, at a glance
 
@@ -78,9 +88,20 @@ You'll be asked to pick an install scope:
 ## Commands
 
 <details>
-<summary><b>/vinsap:onboard</b> <sub>(alias <code>/vinsap:init</code>)</sub> — choose input source, set up <code>inputs/</code></summary>
+<summary><b>/vinsap:onboard</b> <sub>(alias <code>/vinsap:init</code>)</sub> — project setup (first run) or start a new ticket</summary>
 
-Checks prerequisites and offers install guidance. Asks whether inputs come from a **Jira ticket** (pulled via `mcp-atlassian` into `inputs/jira/`) or a **manual drop** into `inputs/docs/`, `inputs/emails/`, `inputs/conversations/`. Creates the folder structure if it doesn't exist yet, then runs a short walkthrough pointing you to `/vinsap:config` next.
+**First run for a project** (no `.sdlc/config.json` yet): checks prerequisites, offers install guidance, runs a short walkthrough, points you to `/vinsap:config`.
+
+**Every run after that**: starts a **new ticket** — asks for a ticket ID, asks whether inputs come from a **Jira ticket** (pulled via `mcp-atlassian` into `tickets/<ID>/inputs/jira/`) or a **manual drop** into `tickets/<ID>/inputs/{docs,emails,conversations}/`, creates that ticket's folder structure, and sets it active.
+
+To resume a ticket you already started instead of creating a new one, use `/vinsap:switch <TICKET-ID>`.
+
+</details>
+
+<details>
+<summary><b>/vinsap:switch</b> — change which ticket is active</summary>
+
+`/vinsap:switch <TICKET-ID>` points subsequent commands at a different, already-started ticket — without creating anything. Errors (rather than creating the folder) if that ticket doesn't exist; use `/vinsap:onboard` for a genuinely new one. Shows a quick status summary of the ticket you switch into.
 
 </details>
 
@@ -97,21 +118,23 @@ Creates/updates `.sdlc/config.json`:
 - **Review model tiers** — cheap/fast model for `/vinsap:review`, a smarter model for `/vinsap:deep-review`
 - **Screenshot mode** — `auto` (Playwright captures in the background) or `manual` (you supply screenshots)
 - **Handoff destination default** — Confluence, Jira comment, or file (always confirmable/overridable at runtime)
-- **Git usage** — whether every `.sdlc/timeline.jsonl` entry also gets a matching git commit, 1:1 (off by default, requires the Git CLI if enabled)
+- **Git usage** — whether every ticket's `timeline.jsonl` entry also gets a matching git commit, 1:1 (off by default, requires the Git CLI if enabled)
+
+Set **once** for the whole project — shared by every ticket, not re-asked per ticket.
 
 </details>
 
 <details>
-<summary><b>/vinsap:analyze</b> <sub>(aliases <code>/vinsap:scope</code>, <code>/vinsap:start</code>)</sub> — read inputs, ask gaps, finalize scope</summary>
+<summary><b>/vinsap:analyze</b> <sub>(aliases <code>/vinsap:scope</code>, <code>/vinsap:start</code>)</sub> — read the active ticket's inputs, ask gaps, finalize scope</summary>
 
-Reads everything under `inputs/`, produces a consolidated analysis summary (what's known, what's requested, any conflicts across sources), lists open questions, and asks you those questions directly. Writes the finalized scope to `outputs/scope.md`.
+Reads everything under the active ticket's `inputs/`, produces a consolidated analysis summary (what's known, what's requested, any conflicts across sources), lists open questions, and asks you those questions directly. Writes the finalized scope to that ticket's `outputs/scope.md`.
 
 </details>
 
 <details>
 <summary><b>/vinsap:milestones</b> — break scope into milestones, tagged ABAP/Fiori/mixed</summary>
 
-Queries the target SAP system for reusable objects before proposing new ones. Breaks the scope into discrete, independently testable milestones, each tagged `abap`, `fiori`, or `mixed`. Prefers smaller milestones mapping to a single class/app/capability. Writes the plan into `.sdlc/state.json`.
+Queries the target SAP system for reusable objects before proposing new ones. Breaks the scope into discrete, independently testable milestones, each tagged `abap`, `fiori`, or `mixed`. Prefers smaller milestones mapping to a single class/app/capability. Writes the plan into that ticket's `state.json`.
 
 </details>
 
@@ -123,14 +146,14 @@ Routes to `abap-developer` (ABAP path) or `fiori-developer` (Fiori/UI5 path) bas
 - **ABAP** — class-based (preferred over reports/includes), Clean ABAP style, `ZMASTER` package hierarchy, hard guardrails, transport handling (`[AI-VSP] <MODULE> | <TICKET_ID> | <desc>` naming, stage in `$TMP`, never releases), auto-generated ABAP Unit tests.
 - **Fiori/UI5** — thin controllers, extracted testable logic, auto-generated QUnit (unit) and Playwright (e2e) tests.
 
-Honors `sap.deployment_mode`: `mcp` pushes directly; `manual` writes code + an instruction sheet to `outputs/develop/<milestone>/` for you to apply via ADT.
+Honors `sap.deployment_mode`: `mcp` pushes directly; `manual` writes code + an instruction sheet to that ticket's `outputs/develop/<milestone>/` for you to apply via ADT.
 
 </details>
 
 <details>
 <summary><b>/vinsap:review</b> — quick guideline check, background subagent, cheap model</summary>
 
-Dispatches a subagent (model from `review.quick_model`) to check the milestone's code against the ABAP/Fiori standards — fire-and-forget, doesn't block the session. Findings go to chat and `outputs/reviews/<milestone>-review.md`.
+Dispatches a subagent (model from `review.quick_model`) to check the milestone's code against the ABAP/Fiori standards — fire-and-forget, doesn't block the session. Findings go to chat and that ticket's `outputs/reviews/<milestone>-review.md`.
 
 </details>
 
@@ -158,14 +181,14 @@ Asks which document to create, lets you pick sections, loads the matching Vincit
 <details>
 <summary><b>/vinsap:status</b> — plain CLI progress view, callable anytime</summary>
 
-Reads `.sdlc/state.json` and prints a kanban-style view of stage and per-milestone progress — no external tooling, just formatted text.
+Shows the active ticket's stage/milestone progress by default, or `/vinsap:status all` lists every ticket in the project with a one-line summary each, marking which one is active — no external tooling, just formatted text.
 
 </details>
 
 <details>
-<summary><b>/vinsap:handoff</b> — session timeline → markdown summary, callable anytime</summary>
+<summary><b>/vinsap:handoff</b> — active ticket's timeline → markdown summary, callable anytime</summary>
 
-Reads the full `.sdlc/timeline.jsonl` (every meaningful action any skill has taken) and formats a narrative markdown summary: what happened, key decisions, code changes, current status, open items. Asks where it should go — a Jira ticket comment, a standalone file in `outputs/handoff/`, or Confluence — always confirming rather than assuming.
+Reads that ticket's full `timeline.jsonl` (every meaningful action any skill has taken on it) and formats a narrative markdown summary: what happened, key decisions, code changes, current status, open items. Asks where it should go — a Jira ticket comment, a standalone file in that ticket's `outputs/handoff/`, or Confluence — always confirming rather than assuming.
 
 </details>
 
@@ -187,22 +210,31 @@ Additional hard guardrails baked into `abap-developer` (see `skills/abap-develop
 - Syntax check + ATC check before any save/activate
 - No release-transport tool is exposed by the MCP server at all — release happens outside the plugin
 
-## Project layout, created by `/vinsap:onboard`
+## Project layout
+
+Shared config lives once at the project root; everything else is scoped per ticket under `tickets/<TICKET-ID>/`:
 
 ```
 your-project/
-  inputs/
-    docs/ emails/ conversations/ jira/
-  outputs/
-    scope.md
-    reviews/<milestone>-review.md, <milestone>-deep-review.md
-    docs/                      # generated Functional/Technical/Test documents
-    handoff/
   .sdlc/
-    config.json                # connectors, systems/modes, model tiers, screenshot mode
-    state.json                 # current stage + per-milestone status — powers /vinsap:status
-    timeline.jsonl              # append-only history — powers /vinsap:handoff
+    config.json                # shared across ALL tickets: connectors, systems/modes, model tiers, screenshot mode, git usage
+    active_ticket.json          # {"active_ticket": "ADSD-1204"} — which ticket commands target right now
+  tickets/
+    ADSD-1204/
+      inputs/
+        docs/ emails/ conversations/ jira/
+      outputs/
+        scope.md
+        reviews/<milestone>-review.md, <milestone>-deep-review.md
+        docs/                    # generated Functional/Technical/Test documents
+        handoff/
+      state.json                 # this ticket's stage + per-milestone status — powers /vinsap:status
+      timeline.jsonl               # this ticket's append-only history — powers /vinsap:handoff
+    ADSD-1301/
+      ...                         # same structure, a separate ticket in flight
 ```
+
+`/vinsap:onboard` creates a new `tickets/<TICKET-ID>/` and sets it active; `/vinsap:switch <TICKET-ID>` moves between ones you've already started.
 
 ## Configuration reference (`.sdlc/config.json`)
 

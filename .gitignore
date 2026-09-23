@@ -15,6 +15,5 @@ node_modules/
 *.local.json
 
 # Project-instance state that belongs to a consuming project, not the plugin itself
-/inputs/
-/outputs/
+/tickets/
 /.sdlc/

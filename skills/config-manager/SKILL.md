@@ -40,15 +40,15 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 1. Read the existing `.sdlc/config.json` if present; show the user what's already set vs. what's still missing.
 2. Ask for missing values conversationally, grouped by section (connectors, products, prerequisites, deployment mode, diagram tool, model tiers, screenshot mode, git usage, handoff default) — don't ask everything as one giant form.
 3. Re-run the prerequisite check from `onboarding-guide/references/prerequisites.md` if the user wants to change tooling.
-4. Write the merged config back to `.sdlc/config.json`.
-5. Append a `.sdlc/timeline.jsonl` entry summarizing what changed.
+4. Write the merged config back to `.sdlc/config.json` — shared across every ticket, not ticket-scoped.
+5. If a ticket is currently active (`.sdlc/active_ticket.json`), append an entry summarizing what changed to that ticket's `timeline.jsonl`. If no ticket is active yet (e.g. this is the project's first-ever `/vinsap:config` run before any `/vinsap:onboard`), skip this — there's no ticket-scoped file to write to yet.
 
 ## Deployment mode
 
 Ask the user to choose `sap.deployment_mode`:
 
 - **`mcp`** (default) — `abap-developer` pushes code, creates/activates transports, and runs the linter directly through the `vincit-abap-mcp-<SID>` connector (the Vincit SAP MCP VS Code extension). Fully automated per `abap-developer/references/transport-guidelines.md`.
-- **`manual`** — `abap-developer` still generates the code and runs it through the same guardrails/style checks locally, but does **not** push anything through the MCP connector. Instead it writes the finished object source to `outputs/develop/<milestone>/` with an instruction sheet (object name, package, transport request to use) for the user to apply themselves via ADT (Eclipse/VS Code ABAP Development Tools).
+- **`manual`** — `abap-developer` still generates the code and runs it through the same guardrails/style checks locally, but does **not** push anything through the MCP connector. Instead it writes the finished object source to `tickets/<active>/outputs/develop/<milestone>/` with an instruction sheet (object name, package, transport request to use) for the user to apply themselves via ADT (Eclipse/VS Code ABAP Development Tools).
 
 `sap.deployment_mode` is read by `abap-developer` on every `/vinsap:develop` run — surface which mode is active before generating code so the user isn't surprised by whether something landed in the system or just on disk.
 
@@ -56,10 +56,10 @@ Ask the user to choose `sap.deployment_mode`:
 
 ## Git usage
 
-Ask the user whether this project should track its VinSAP artifacts (`inputs/`, `outputs/`, `.sdlc/`) in git — set `git.enabled` accordingly:
+Ask the user whether this project should track its VinSAP artifacts (`tickets/`, `.sdlc/`) in git — set `git.enabled` accordingly:
 
-- **`true`** — every `.sdlc/timeline.jsonl` append gets a matching git commit, 1:1 (see `_shared/context-contract.md` → "Git tracking"). `git log` and the timeline become two views of the same history. Requires the Git CLI — see `onboarding-guide/references/prerequisites.md`.
-- **`false`** (default) — no git activity from the plugin; `.sdlc/timeline.jsonl` remains the only history.
+- **`true`** — every ticket's `timeline.jsonl` append gets a matching git commit, 1:1 (see `_shared/context-contract.md` → "Git tracking"). `git log` and the timeline become two views of the same history, legible across multiple tickets. Requires the Git CLI — see `onboarding-guide/references/prerequisites.md`.
+- **`false`** (default) — no git activity from the plugin; each ticket's `timeline.jsonl` remains the only history.
 
 This is about **local project tracking** of VinSAP's own working files, not the SAP-side ABAP transport/`$TMP` workflow (already handled in `abap-developer/references/transport-guidelines.md`) and not gCTS/git-enabled ABAP repos (the `adt_*_git_repo` tools) — those are separate concerns this plugin doesn't currently manage.
 
@@ -75,7 +75,7 @@ This plugin ships `mcp-atlassian` (sooperset/mcp-atlassian, run via `uvx`) in `.
 2. Tell the user to set the matching environment variables in their own shell profile (or a local `.env` the project's `.gitignore` excludes) so `.mcp.json`'s `${VAR}` placeholders resolve at launch:
    - `VINSAP_JIRA_USERNAME`, `VINSAP_CONFLUENCE_USERNAME`
    - `JIRA_API_TOKEN`, `CONFLUENCE_API_TOKEN` — **the two actual secrets**
-3. **Never write `JIRA_API_TOKEN` or `CONFLUENCE_API_TOKEN` into `.sdlc/config.json`, `.sdlc/timeline.jsonl`, any output file, or anything this skill controls.** If the user pastes a token into chat, don't echo it back or persist it anywhere — just confirm they've set it as an environment variable and move on. This applies even though `.sdlc/` is already gitignored in the plugin's own repo — the *consuming* project may not have that protection unless `/vinsap:onboard`/`/vinsap:config` also adds it (see step 4).
+3. **Never write `JIRA_API_TOKEN` or `CONFLUENCE_API_TOKEN` into `.sdlc/config.json`, any ticket's `timeline.jsonl`, any output file, or anything this skill controls.** If the user pastes a token into chat, don't echo it back or persist it anywhere — just confirm they've set it as an environment variable and move on. This applies even though `.sdlc/` is already gitignored in the plugin's own repo — the *consuming* project may not have that protection unless `/vinsap:onboard`/`/vinsap:config` also adds it (see step 4).
 4. If the consuming project doesn't already gitignore `.sdlc/`, add it — belt-and-suspenders against accidentally committing anything sensitive that ends up there.
 
 ## SAP system discovery (not static)

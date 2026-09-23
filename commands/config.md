@@ -12,6 +12,6 @@ Invoke the `config-manager` skill to create or update `.sdlc/config.json`:
 - **Review model tiers** — `review.quick_model` (cheap/fast, e.g. haiku) and `review.deep_model` (smarter, e.g. opus/sonnet).
 - **Screenshot mode** — `documentation.screenshot_mode`: `auto` (Playwright captures in background) or `manual` (user supplies screenshots).
 - **Handoff destination default** — `confluence`, `jira-comment`, or `file` (user is still asked to confirm/override each time `/vinsap:handoff` runs).
-- **Git usage** — `git.enabled`: whether this project's VinSAP artifacts (`inputs/`, `outputs/`, `.sdlc/`) get tracked/committed in git as the pipeline progresses. Requires the Git CLI if enabled.
+- **Git usage** — `git.enabled`: whether this project's VinSAP artifacts (`tickets/`, `.sdlc/`) get tracked/committed in git as the pipeline progresses. Requires the Git CLI if enabled.
 
-Show the user what is already configured vs. still missing before asking for new input. Append an entry to `.sdlc/timeline.jsonl` on any change.
+Show the user what is already configured vs. still missing before asking for new input. Append an entry to `tickets/<active>/timeline.jsonl` on any change.

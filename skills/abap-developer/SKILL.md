@@ -40,17 +40,17 @@ Auto-generate an ABAP Unit test class alongside every class/method generated, fo
 Read `sap.deployment_mode` from `.sdlc/config.json` before generating code, and tell the user which mode is active:
 
 - **`mcp`** (default) — push, save, activate, and manage the transport directly through the `vincit-abap-mcp-<SID>` connector, per the steps below.
-- **`manual`** — generate the code and run it through the same guardrails/lint/style checks locally, but do not push through the MCP connector. Instead write the finished object source to `outputs/develop/<milestone>/`, plus an instruction sheet (object name, target package, transport request name/number to use) for the user to apply themselves via ADT.
+- **`manual`** — generate the code and run it through the same guardrails/lint/style checks locally, but do not push through the MCP connector. Instead write the finished object source to `tickets/<active>/outputs/develop/<milestone>/`, plus an instruction sheet (object name, target package, transport request name/number to use) for the user to apply themselves via ADT.
 
 ## Steps
 
-1. Read the target milestone from `.sdlc/state.json` and `outputs/scope.md`.
+1. Read the target milestone from `tickets/<active>/state.json` and `tickets/<active>/outputs/scope.md`.
 2. Design the class(es)/objects needed, checking `references/package-hierarchy.md` for correct placement. Use `adt_search_objects`/`adt_get_source` to check for reuse and inspect existing structures.
 3. Generate code, respecting all guardrails above. In `mcp` mode, create/write via `adt_create_object`/`adt_write_source`; in `manual` mode, generate locally without calling those.
 4. Run `adt_syntax_check` and `adt_run_atc_check`; fix issues before saving/activating (or before handing off, in `manual` mode).
 5. Ask the user for the target package (default suggestion: `sap.default_package` from `.sdlc/config.json`) and the transport per `references/transport-guidelines.md`: call `adt_list_transports`, present the open/modifiable transports found (flagging any matching the `[AI-VSP]` signature) for the user to pick from, or offer to create a new one via `adt_create_transport` if none fit. Stage in `$TMP`, activate into the chosen transport. In `manual` mode, note the package/transport name to use in the instruction sheet instead of calling `adt_create_transport` directly.
 6. Generate the matching ABAP Unit test class per `references/unittest-guidelines.md` (run it later via `adt_run_unit_tests` in `/vinsap:test`).
-7. Update `.sdlc/state.json` milestone status; append a `.sdlc/timeline.jsonl` entry for each meaningful action (object created, transport touched, test generated) — not just once at the end.
+7. Update `tickets/<active>/state.json` milestone status; append a `tickets/<active>/timeline.jsonl` entry for each meaningful action (object created, transport touched, test generated) — not just once at the end.
 
 ## Guardrail exceptions
 

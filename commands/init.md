@@ -1,5 +1,5 @@
 ---
-description: Choose input source (Jira ticket vs manual drop) and set up the inputs/ folder for this SDLC engagement. Alias of /vinsap:onboard.
+description: Start a new ticket (or, on the very first run for a project, walk through initial setup). Alias of /vinsap:onboard.
 ---
 
 Invoke the `onboarding-guide` skill. See `commands/onboard.md` for the full flow — this command is an alias of the same skill.

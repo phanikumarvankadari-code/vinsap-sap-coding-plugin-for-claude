@@ -9,7 +9,7 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 
 ## Steps
 
-1. Identify the target milestone(s) from `.sdlc/state.json` (default: all milestones in `develop: "done"` state not yet `test: "done"`).
+1. Identify the target milestone(s) from `tickets/<active>/state.json` (default: all milestones in `develop: "done"` state not yet `test: "done"`).
 2. Run **ABAP Unit** tests via `vincit-abap-mcp-<SID>` MCP for ABAP milestones.
 3. Run **QUnit** tests for Fiori/UI5 milestones.
 4. Run **Playwright** e2e tests as a **background subagent** (fire-and-forget) — do not block the main session waiting on browser tests.
@@ -18,9 +18,9 @@ Follow `../_shared/context-contract.md` for read/write conventions.
    b. Attempt a fix (in source code or in the test, whichever is actually wrong).
    c. Re-run the specific failing test.
    d. Repeat up to a retry cap (default 3 attempts) per failure.
-   e. If still failing after the cap, mark the milestone `test: "blocked"` in `.sdlc/state.json` and flag it to the user with the failure detail — do not keep retrying silently.
-6. Update `.sdlc/state.json` (`test: "done"` on full pass).
-7. Append a `.sdlc/timeline.jsonl` entry for every test run and every auto-fix attempt (not just the final outcome).
+   e. If still failing after the cap, mark the milestone `test: "blocked"` in `tickets/<active>/state.json` and flag it to the user with the failure detail — do not keep retrying silently.
+6. Update `tickets/<active>/state.json` (`test: "done"` on full pass).
+7. Append a `tickets/<active>/timeline.jsonl` entry for every test run and every auto-fix attempt (not just the final outcome).
 8. Report a pass/fail summary per milestone to the user.
 
 ## Notes
