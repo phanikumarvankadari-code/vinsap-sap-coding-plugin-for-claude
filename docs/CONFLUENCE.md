@@ -20,6 +20,7 @@ It connects to SAP through the **Vincit SAP MCP** (a VS Code extension, connecte
 - **Vincit SAP MCP** (VS Code extension) — connect this *before* running `/vinsap:config`
 - **uv/uvx** — launches the Jira/Confluence connector. [uv docs](https://docs.astral.sh/uv/)
 - **mcp-atlassian** — Jira/Confluence connector, already declared in the plugin, launched via `uvx`. Site URLs, project/space filters, and read-only mode are hardcoded Vincit-wide constants in `.mcp.json`; only usernames come from `/vinsap:config`. **API tokens are set as environment variables on your machine, never stored in any config file.**
+- **Atlassian API token** — there's no separate "MCP key"; `mcp-atlassian` authenticates as you with your personal Atlassian API token. Generate one at [id.atlassian.com → API tokens](https://id.atlassian.com/manage-profile/security/api-tokens), then set it as `JIRA_API_TOKEN` and `CONFLUENCE_API_TOKEN` in your shell profile (same token for both). Never share it or commit it anywhere.
 
 ## Installing
 
