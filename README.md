@@ -11,6 +11,12 @@ VinSAP automates the SAP/ABAP development lifecycle end-to-end inside Claude Cod
 
 It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension, connected per system) and to Jira/Confluence through **[mcp-atlassian](https://github.com/sooperset/mcp-atlassian)** (run via `uvx`). A shipped hook (`hooks/guard_sap_mcp.py`) mechanically enforces system-mode rules (dev/quality/production) and SQL guardrails on every SAP call — independent of what the model decides to do.
 
+| Where it works | |
+|---|---|
+| Claude Code (CLI, desktop app's Claude Code tab, web, IDE extensions) | ✅ |
+| claude.ai (web chat) | ❌ |
+| Claude Desktop (consumer app, Chat tab) | ❌ |
+
 ## Contents
 
 - [Prerequisites](#prerequisites)
