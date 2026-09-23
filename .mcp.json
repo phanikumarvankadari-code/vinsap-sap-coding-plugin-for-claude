@@ -1,19 +1,19 @@
 {
   "mcpServers": {
     "mcp-atlassian": {
-      "description": "Jira + Confluence access (sooperset/mcp-atlassian, run via uvx) for ticket ingestion and doc/handoff publishing. Non-secret fields (URLs, usernames, project/space filters) come from /vinsap:config → .sdlc/config.json. API tokens are NEVER stored in config or committed files — set JIRA_API_TOKEN and CONFLUENCE_API_TOKEN as real environment variables in your own shell/profile; the ${VAR} placeholders below are resolved from your environment at launch, not from this file.",
+      "description": "Jira + Confluence access (sooperset/mcp-atlassian, run via uvx) for ticket ingestion and doc/handoff publishing. JIRA_URL, JIRA_PROJECTS_FILTER, CONFLUENCE_URL, CONFLUENCE_SPACES_FILTER, and READ_ONLY_MODE are hardcoded Vincit-wide constants (same site/project/space for every engagement using this plugin) — not secrets, safe to commit. Only the two usernames still come from /vinsap:config → .sdlc/config.json. API tokens are NEVER stored in config or committed files — set JIRA_API_TOKEN and CONFLUENCE_API_TOKEN as real environment variables in your own shell/profile; the ${VAR} placeholders below are resolved from your environment at launch, not from this file.",
       "command": "uvx",
       "args": ["mcp-atlassian"],
       "env": {
-        "JIRA_URL": "${VINSAP_JIRA_URL}",
+        "JIRA_URL": "https://vincit.atlassian.net",
         "JIRA_USERNAME": "${VINSAP_JIRA_USERNAME}",
         "JIRA_API_TOKEN": "${JIRA_API_TOKEN}",
-        "JIRA_PROJECTS_FILTER": "${VINSAP_JIRA_PROJECTS_FILTER}",
-        "CONFLUENCE_URL": "${VINSAP_CONFLUENCE_URL}",
+        "JIRA_PROJECTS_FILTER": "ADSD",
+        "CONFLUENCE_URL": "https://vincit.atlassian.net/wiki",
         "CONFLUENCE_USERNAME": "${VINSAP_CONFLUENCE_USERNAME}",
         "CONFLUENCE_API_TOKEN": "${CONFLUENCE_API_TOKEN}",
-        "CONFLUENCE_SPACES_FILTER": "${VINSAP_CONFLUENCE_SPACES_FILTER}",
-        "READ_ONLY_MODE": "${VINSAP_ATLASSIAN_READ_ONLY_MODE}"
+        "CONFLUENCE_SPACES_FILTER": "ADSD",
+        "READ_ONLY_MODE": "false"
       }
     }
   }

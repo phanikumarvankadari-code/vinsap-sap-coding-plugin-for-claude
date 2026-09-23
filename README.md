@@ -89,7 +89,7 @@ Checks prerequisites and offers install guidance. Asks whether inputs come from 
 
 Creates/updates `.sdlc/config.json`:
 
-- **Connectors** — `mcp-atlassian` (Jira URL/username/project filter, Confluence URL/username/space filter, read-only mode). Non-secret only — API tokens are set as environment variables, never stored in config.
+- **Connectors** — `mcp-atlassian` (just Jira/Confluence username — everything else, including site URLs, project/space filters, and read-only mode, is hardcoded Vincit-wide in `.mcp.json`). API tokens are set as environment variables, never stored in config.
 - **SAP systems** — discovers currently-connected `vincit-abap-mcp-*` servers and asks you to map each to a role (`DEV`/`QA`/`PRD`/custom) and a **mode** (`dev`/`quality`/`production`). Server names are never hardcoded — they're connected globally per system, outside the plugin.
 - **Deployment mode** — `mcp` (push/activate/transport directly) or `manual` (generate code + an instruction sheet for you to apply via ADT)
 - **Products/modules** — solution-area codes in scope (`FIN`, `SLS`, `SRC`, `MFG`, `SCM`, `HCM`, `AST`, `SVC`, `CORE`)
@@ -206,19 +206,14 @@ your-project/
 
 ## Configuration reference (`.sdlc/config.json`)
 
-Only non-secret settings live here. `JIRA_API_TOKEN` and `CONFLUENCE_API_TOKEN` are set as real environment variables on your machine and referenced by `.mcp.json` as `${VAR}` placeholders — never written to this file or committed anywhere.
+Only non-secret settings live here. `JIRA_URL`, `JIRA_PROJECTS_FILTER`, `CONFLUENCE_URL`, `CONFLUENCE_SPACES_FILTER`, and `READ_ONLY_MODE` are Vincit-wide constants hardcoded directly in `.mcp.json` (not per-project — note `READ_ONLY_MODE` defaults to `false`, i.e. write access is on by default). `JIRA_API_TOKEN` and `CONFLUENCE_API_TOKEN` are set as real environment variables on your machine and referenced by `.mcp.json` as `${VAR}` placeholders — never written to this file or committed anywhere.
 
 ```json
 {
   "connectors": {
     "mcp-atlassian": {
-      "jira_url": "",
       "jira_username": "",
-      "jira_projects_filter": "",
-      "confluence_url": "",
-      "confluence_username": "",
-      "confluence_spaces_filter": "",
-      "read_only_mode": false
+      "confluence_username": ""
     }
   },
   "sap": {

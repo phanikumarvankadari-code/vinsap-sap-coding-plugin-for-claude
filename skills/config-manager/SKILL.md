@@ -15,13 +15,8 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 {
   "connectors": {
     "mcp-atlassian": {
-      "jira_url": "",
       "jira_username": "",
-      "jira_projects_filter": "",
-      "confluence_url": "",
-      "confluence_username": "",
-      "confluence_spaces_filter": "",
-      "read_only_mode": false
+      "confluence_username": ""
     }
   },
   "sap": {
@@ -70,17 +65,18 @@ This is about **local project tracking** of VinSAP's own working files, not the 
 
 ## Atlassian connector (mcp-atlassian)
 
-This plugin ships `mcp-atlassian` (sooperset/mcp-atlassian, run via `uvx`) in `.mcp.json`, wired to environment-variable placeholders — not to `.sdlc/config.json` directly, because Claude Code resolves an MCP server's `env` block from the *actual process environment* at launch, not from any project file.
+This plugin ships `mcp-atlassian` (sooperset/mcp-atlassian, run via `uvx`) in `.mcp.json`.
 
-1. Ask the user for the **non-secret** fields — Jira URL, Jira username, Jira projects filter, Confluence URL, Confluence username, Confluence spaces filter, read-only mode — and write those into `connectors.mcp-atlassian` in `.sdlc/config.json` as shown above.
+**Hardcoded Vincit-wide constants** (in `.mcp.json` directly, committed, not asked in `/vinsap:config`): `JIRA_URL` (`https://vincit.atlassian.net`), `JIRA_PROJECTS_FILTER` (`ADSD`), `CONFLUENCE_URL` (`https://vincit.atlassian.net/wiki`), `CONFLUENCE_SPACES_FILTER` (`ADSD`), `READ_ONLY_MODE` (`false`). These are the same for every engagement using this plugin — not secrets, safe to commit. **`READ_ONLY_MODE: false` means write access to Jira/Confluence is enabled by default for everyone using this plugin** — worth surfacing to the user the first time `/vinsap:config` runs, since it's a real capability, not just bookkeeping. If a future engagement needs a different Jira project, Atlassian site, or read-only posture, update `.mcp.json` directly rather than trying to make these configurable per-project.
+
+**Only the two usernames stay environment-variable-driven**, resolved from the *actual process environment* at launch, not from `.sdlc/config.json`:
+
+1. Ask the user for the remaining **non-secret** fields — Jira username, Confluence username — and write those into `connectors.mcp-atlassian` in `.sdlc/config.json` as shown above.
 2. Tell the user to set the matching environment variables in their own shell profile (or a local `.env` the project's `.gitignore` excludes) so `.mcp.json`'s `${VAR}` placeholders resolve at launch:
-   - `VINSAP_JIRA_URL`, `VINSAP_JIRA_USERNAME`, `VINSAP_JIRA_PROJECTS_FILTER`
-   - `VINSAP_CONFLUENCE_URL`, `VINSAP_CONFLUENCE_USERNAME`, `VINSAP_CONFLUENCE_SPACES_FILTER`
-   - `VINSAP_ATLASSIAN_READ_ONLY_MODE`
+   - `VINSAP_JIRA_USERNAME`, `VINSAP_CONFLUENCE_USERNAME`
    - `JIRA_API_TOKEN`, `CONFLUENCE_API_TOKEN` — **the two actual secrets**
 3. **Never write `JIRA_API_TOKEN` or `CONFLUENCE_API_TOKEN` into `.sdlc/config.json`, `.sdlc/timeline.jsonl`, any output file, or anything this skill controls.** If the user pastes a token into chat, don't echo it back or persist it anywhere — just confirm they've set it as an environment variable and move on. This applies even though `.sdlc/` is already gitignored in the plugin's own repo — the *consuming* project may not have that protection unless `/vinsap:onboard`/`/vinsap:config` also adds it (see step 4).
 4. If the consuming project doesn't already gitignore `.sdlc/`, add it — belt-and-suspenders against accidentally committing anything sensitive that ends up there.
-5. Prefer non-secret filter fields be scoped narrowly (a specific Jira project key, a specific Confluence space) rather than left open — matches the principle of least access, and keeps `mcp-atlassian`'s reach limited to what this engagement actually needs.
 
 ## SAP system discovery (not static)
 
