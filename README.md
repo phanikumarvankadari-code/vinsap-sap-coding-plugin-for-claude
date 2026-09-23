@@ -174,7 +174,7 @@ Runs in the foreground (model from `review.deep_model`) so it can ask you clarif
 <details>
 <summary><b>/vinsap:docs</b> — interactive Functional/Technical/Test documents</summary>
 
-Asks which document to create, lets you pick sections, loads the matching Vincit `.docx` template, and fills it conversationally — pulling what it can from scope/code/tests, asking you for the rest. Follows a plain-English, bullet-first writing style, generates diagrams via the `illustrator` skill, and flags the draft for UX review before saving. Can publish to Confluence (new page or update existing) with the document attached. Test-doc screenshots follow `documentation.screenshot_mode`.
+Asks which document to create, lets you pick sections, loads the matching Vincit `.docx` template, and fills it conversationally — pulling what it can from scope/code/tests, asking you for the rest. Follows a plain-English, bullet-first writing style, generates diagrams via the `illustrator` skill, and flags the draft for UX review before saving. Can publish to Confluence (new page — defaults to the `documentation.confluence_parent_id` folder — or update existing) with the document attached. Test-doc screenshots follow `documentation.screenshot_mode`.
 
 </details>
 
@@ -258,7 +258,7 @@ Only non-secret settings live here. `JIRA_URL`, `JIRA_PROJECTS_FILTER`, `CONFLUE
   "products": ["FIN", "SLS", "SRC", "MFG", "SCM", "HCM", "AST", "SVC", "CORE"],
   "diagram_tool": "drawio",
   "review": { "quick_model": "haiku", "deep_model": "opus" },
-  "documentation": { "screenshot_mode": "auto" },
+  "documentation": { "screenshot_mode": "auto", "confluence_parent_id": "10682105864" },
   "handoff": { "destination": "file" },
   "git": { "enabled": false }
 }

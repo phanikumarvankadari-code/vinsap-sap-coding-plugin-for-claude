@@ -49,7 +49,7 @@ VinSAP works across **many tickets in one project**. Connectors/systems/preferen
 8. **`/vinsap:test`** — runs tests, auto-fixes failures up to a retry cap
    *(steps 6–8 repeat per milestone until tests pass)*
 9. **`/vinsap:deep-review`** — thorough, cross-milestone review, runs in the foreground on a stronger model, can ask clarifying questions
-10. **`/vinsap:docs`** — generates Functional/Technical/Test documents from Vincit templates, optionally publishes to Confluence
+10. **`/vinsap:docs`** — generates Functional/Technical/Test documents from Vincit templates, optionally publishes to Confluence (new pages default into the [ADSD documentation folder](https://vincit.atlassian.net/wiki/spaces/ADSD/folder/10682105864))
 
 Three commands work at any point, on the active ticket:
 

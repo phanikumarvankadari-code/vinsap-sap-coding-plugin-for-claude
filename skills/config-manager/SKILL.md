@@ -29,7 +29,7 @@ Follow `../_shared/context-contract.md` for read/write conventions.
   "products": ["FIN", "SLS", "SRC", "MFG", "SCM", "HCM", "AST", "SVC", "CORE"],
   "diagram_tool": "drawio",
   "review": { "quick_model": "haiku", "deep_model": "opus" },
-  "documentation": { "screenshot_mode": "auto" },
+  "documentation": { "screenshot_mode": "auto", "confluence_parent_id": "10682105864" },
   "handoff": { "destination": "file" },
   "git": { "enabled": false }
 }
@@ -89,3 +89,4 @@ The Vincit SAP MCP is **not** declared in this plugin's `.mcp.json` — each sys
 5. Re-run this discovery whenever the user adds a new system, rather than assuming the mapping is static forever.
 - `review.quick_model` / `review.deep_model` power `/vinsap:review` and `/vinsap:deep-review` respectively — see `code-reviewer/SKILL.md`.
 - `handoff.destination` is only ever a *default*; `/vinsap:handoff` always confirms or lets the user override at runtime.
+- `documentation.confluence_parent_id` defaults to `10682105864` — the Vincit ADSD space's documentation folder (`https://vincit.atlassian.net/wiki/spaces/ADSD/folder/10682105864`). `doc-generator` (and `session-recorder` for handoff) use this as the `parentId` when creating a new Confluence page, so published docs land in that folder by default rather than at the space root. Ask the user only if they want a different default; it's still overridable per publish.

@@ -21,7 +21,7 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 4. Then ask the user whether to **also** publish it externally, offering `handoff.destination` from `.sdlc/config.json` as the default but always confirming/allowing override or skipping:
    - **Jira ticket comment** — via `mcp-atlassian` MCP, post to the linked ticket
    - **Confluence page** — via `mcp-atlassian` MCP, create new or update existing, if configured
-   - **None** — the local file in `outputs/handoff/` is enough this time
+   - **None** — the local file in `tickets/<active>/outputs/handoff/` is enough this time
 5. Append a `tickets/<active>/timeline.jsonl` entry recording that a handoff was produced (`action: "handoff_created"`), noting whether it was also published externally and where.
 
 ## Notes

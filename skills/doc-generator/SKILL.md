@@ -23,7 +23,8 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 5. Flag the drafted document for **UX review** before finalizing — surface it to the user explicitly as a review checkpoint, don't silently mark it done.
 6. Save the filled document to `tickets/<active>/outputs/docs/`.
 7. Ask whether to publish to **Confluence** via the `mcp-atlassian` MCP connector:
-   - Create a new page, or update an existing one (search/select).
+   - **Create a new page** — defaults to `documentation.confluence_parent_id` from `.sdlc/config.json` (the ADSD space's documentation folder) as the parent, so it nests there rather than at the space root. Confirm with the user, don't silently assume a different parent.
+   - **Update an existing page** (search/select) instead, if one already exists for this ticket/doc.
    - Attach the generated file to that page.
 8. For the Test document, follow `.sdlc/config.json` → `documentation.screenshot_mode`:
    - `auto` — Playwright captures screenshots in the background (subagent, fire-and-forget) and they're embedded automatically.
