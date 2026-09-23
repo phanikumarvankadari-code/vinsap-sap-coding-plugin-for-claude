@@ -4,10 +4,15 @@ description: Show current stage and per-milestone progress as a plain CLI kanban
 
 Read `.sdlc/state.json`. No dedicated skill — format directly.
 
+Also report the Atlassian connection: check whether `mcp-atlassian` tools (`mcp__mcp-atlassian__*`) are available in the current session — if so, read `.mcp.json`'s `mcpServers.mcp-atlassian.env` for `JIRA_PROJECTS_FILTER` and `CONFLUENCE_SPACES_FILTER` (both hardcoded Vincit constants, currently `ADSD`) and show them. If the tools aren't available, say "not connected" rather than guessing.
+
 Output format:
 
 ```
 VinSAP — <ticket/project id> Status
+
+Atlassian: ✅ connected — Jira project ADSD · Confluence space ADSD
+           (or: ❌ not connected — check /mcp)
 
 Stage Progress
 ✅ onboard
