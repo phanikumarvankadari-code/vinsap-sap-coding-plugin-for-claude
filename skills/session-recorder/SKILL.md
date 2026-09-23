@@ -1,6 +1,6 @@
 ---
 name: session-recorder
-description: Use for /vinsap:handoff — reads the active ticket's full timeline, formats a narrative markdown summary, and saves it to Jira, Confluence, or a local file per user's choice.
+description: Use for /vinsap:handoff — reads the active ticket's full timeline, formats a narrative markdown summary, always saves a copy into the ticket's outputs/handoff/, and optionally also publishes to Jira or Confluence.
 ---
 
 # Session Recorder
@@ -17,11 +17,12 @@ Follow `../_shared/context-contract.md` for read/write conventions.
    - Current milestone status (pull from `tickets/<active>/state.json`)
    - Open items/blockers
    - Follow `doc-generator/references/writing-style.md` — simple English, bullets over paragraphs
-3. Ask the user where it should go, offering `handoff.destination` from `.sdlc/config.json` as the default but always confirming/allowing override:
+3. **Always** save the markdown to `tickets/<active>/outputs/handoff/<timestamp>-handoff.md` — this is unconditional, not a destination choice. This is what keeps the ticket's own record of what happened, independent of anything published externally.
+4. Then ask the user whether to **also** publish it externally, offering `handoff.destination` from `.sdlc/config.json` as the default but always confirming/allowing override or skipping:
    - **Jira ticket comment** — via `mcp-atlassian` MCP, post to the linked ticket
-   - **Standalone markdown file** — save to `tickets/<active>/outputs/handoff/<timestamp>-handoff.md`
    - **Confluence page** — via `mcp-atlassian` MCP, create new or update existing, if configured
-4. Append a `tickets/<active>/timeline.jsonl` entry recording that a handoff was produced (`action: "handoff_created"`).
+   - **None** — the local file in `outputs/handoff/` is enough this time
+5. Append a `tickets/<active>/timeline.jsonl` entry recording that a handoff was produced (`action: "handoff_created"`), noting whether it was also published externally and where.
 
 ## Notes
 

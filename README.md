@@ -188,7 +188,7 @@ Shows the active ticket's stage/milestone progress by default, or `/vinsap:statu
 <details>
 <summary><b>/vinsap:handoff</b> — active ticket's timeline → markdown summary, callable anytime</summary>
 
-Reads that ticket's full `timeline.jsonl` (every meaningful action any skill has taken on it) and formats a narrative markdown summary: what happened, key decisions, code changes, current status, open items. Asks where it should go — a Jira ticket comment, a standalone file in that ticket's `outputs/handoff/`, or Confluence — always confirming rather than assuming.
+Reads that ticket's full `timeline.jsonl` (every meaningful action any skill has taken on it) and formats a narrative markdown summary: what happened, key decisions, code changes, current status, open items. **Always** saves it into that ticket's `outputs/handoff/` — this is the ticket's own record, not a destination choice. Then asks whether to also publish it externally (Jira comment, Confluence, or skip) — always confirming rather than assuming.
 
 </details>
 

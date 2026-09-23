@@ -55,7 +55,7 @@ Three commands work at any point, on the active ticket:
 
 - **`/vinsap:status`** — plain progress view of the active ticket, or `/vinsap:status all` to list every ticket
 - **`/vinsap:switch <TICKET-ID>`** — jump to a ticket already started, without re-onboarding it
-- **`/vinsap:handoff`** — narrative summary of everything that happened on the active ticket, saved to Jira, Confluence, or a file
+- **`/vinsap:handoff`** — narrative summary of everything that happened on the active ticket, always saved into that ticket's `outputs/handoff/`, and optionally also published to Jira or Confluence
 
 ## System modes and guardrails
 
