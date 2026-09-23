@@ -56,6 +56,8 @@ You'll be asked to pick an install scope:
 | **Project** | Installed for everyone who works in this repo. |
 | **Local** (this repo only) | Just you, and only inside this one repo. |
 
+**Using the Claude Code desktop app?** Same plugin system, same `/plugin` commands, same slash commands once installed — install and run it exactly as above, inside a project opened in the desktop app. This is different from the plain **Claude Desktop** consumer chat app: that one doesn't support Claude Code plugins (skills, hooks, slash commands) at all — it only understands raw MCP servers. If that's what you're on, you'd have to hand-add `mcp-atlassian`'s config from `.mcp.json` to Claude Desktop's own MCP settings, but you'd lose every VinSAP command, skill, and guardrail hook — none of that runs there. For the actual VinSAP workflow, use Claude Code (CLI, desktop app, web, or IDE extension).
+
 ## Onboarding
 
 VinSAP works across **many tickets in one project**. Setup is two-phase: connectors/systems/preferences are configured **once** for the whole project; everything else — inputs, scope, milestones, code, tests, docs, history — is scoped **per ticket** under `tickets/<TICKET-ID>/`, and the whole pipeline below repeats for every new ticket.
