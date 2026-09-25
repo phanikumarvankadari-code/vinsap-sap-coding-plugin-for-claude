@@ -9,10 +9,15 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 
 ## Fields to manage in `.sdlc/config.json`
 
-`sap` is **top-level**. This is the authoritative shape: `hooks/guard_sap_mcp.py::find_system_mode()` reads `config["sap"]["systems"]` directly, so it must match exactly. Note there's no `connectors` block anymore — `mcp-atlassian` now uses OAuth BYOT (see below), which needs zero fields in `.sdlc/config.json`; everything it needs lives in `.mcp.json` plus one environment variable.
+`sap` is **top-level**. This is the authoritative shape: `hooks/guard_sap_mcp.py::find_system_mode()` reads `config["sap"]["systems"]` directly, so it must match exactly. `mcp-atlassian`'s own auth needs zero fields in `.sdlc/config.json` (OAuth BYOT, see below) — but `connectors.mcp-atlassian.atlassian_login` still exists, for a different reason: see "Atlassian connector" below.
 
 ```json
 {
+  "connectors": {
+    "mcp-atlassian": {
+      "atlassian_login": ""
+    }
+  },
   "sap": {
     "systems": {
       "DEV": { "mcp_server": "vincit-abap-mcp-S4H", "mode": "dev" }
@@ -32,7 +37,7 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 ## Steps
 
 1. Read the existing `.sdlc/config.json` if present; show the user what's already set vs. what's still missing.
-2. Ask for missing values conversationally, grouped by section (products, prerequisites, deployment mode, diagram tool, model tiers, screenshot mode, git usage, handoff default) — don't ask everything as one giant form. Nothing to ask for `mcp-atlassian` itself — see below.
+2. Ask for missing values conversationally, grouped by section (Jira/Atlassian login, products, prerequisites, deployment mode, diagram tool, model tiers, screenshot mode, git usage, handoff default) — don't ask everything as one giant form.
 3. Re-run the prerequisite check from `onboarding-guide/references/prerequisites.md` if the user wants to change tooling.
 4. Write the merged config back to `.sdlc/config.json` — shared across every ticket, not ticket-scoped.
 5. If a ticket is currently active (`.sdlc/active_ticket.json`), append an entry summarizing what changed to that ticket's `timeline.jsonl`. If no ticket is active yet (e.g. this is the project's first-ever `/vinsap:config` run before any `/vinsap:onboard`), skip this — there's no ticket-scoped file to write to yet.
@@ -68,6 +73,12 @@ This plugin ships `mcp-atlassian` (sooperset/mcp-atlassian, run via `uvx`) in `.
 1. Tell the user to set `ATLASSIAN_OAUTH_ACCESS_TOKEN` in their own shell profile (or a local `.env` the project's `.gitignore` excludes).
 2. **Token refresh is the user's responsibility** — BYOT tokens aren't auto-refreshed by `mcp-atlassian`. If Jira/Confluence calls start failing with auth errors, the first thing to check is whether this token has expired and needs re-exporting, not a config bug.
 3. **Never write `ATLASSIAN_OAUTH_ACCESS_TOKEN` into `.sdlc/config.json`, any ticket's `timeline.jsonl`, any output file, or anything this skill controls.** If the user pastes it into chat, don't echo it back or persist it anywhere — just confirm they've set it as an environment variable and move on. The *consuming* project may not already gitignore `.sdlc/`, unlike the plugin's own repo — add it if missing (belt-and-suspenders, even though no secret is meant to land there).
+
+### Why `connectors.mcp-atlassian.atlassian_login` still exists
+
+The bearer token authenticates as an **Atlassian Service Account** (`accountType: "app"`), not as the human running this session — confirmed live: `curl .../rest/api/3/myself` with this token returns `accountType: "app"`, a service identity, not a personal one. That means Jira's `assignee = currentUser()` / Confluence's `creator = currentUser()` resolve to the **service account**, not to the person actually using VinSAP — those queries would silently return nothing useful for "my tickets."
+
+So: ask the user for their own Jira/Atlassian login (their email address, e.g. `firstname.lastname@vincit.fi`) and store it as `connectors.mcp-atlassian.atlassian_login` — not a secret, just an email, fine to persist. Every skill that needs to query "tickets assigned to me" or similar (`onboarding-guide`'s Jira-ticket pull, `scope-builder`, etc.) should use `assignee = "<atlassian_login>"` explicitly in JQL/CQL instead of `currentUser()`. If this field is unset when such a query is needed, ask for it then rather than guessing or silently using `currentUser()` (which would be wrong).
 
 ## SAP system discovery (not static)
 

@@ -119,7 +119,7 @@ To resume a ticket you already started instead of creating a new one, use `/vins
 
 Creates/updates `.sdlc/config.json`:
 
-- **Connectors** — `mcp-atlassian` (just Jira/Confluence username — everything else, including site URLs, project/space filters, and read-only mode, is hardcoded Vincit-wide in `.mcp.json`). API tokens are set as environment variables, never stored in config.
+- **Connectors** — `mcp-atlassian` (asks for your Jira/Atlassian login email, since the bearer token authenticates as a shared service account, not you — "assigned to me" queries use this instead of `currentUser()`; everything else, including site URLs, project/space filters, and read-only mode, is hardcoded Vincit-wide in `.mcp.json`). The bearer token itself is set as an environment variable, never stored in config.
 - **SAP systems** — discovers currently-connected `vincit-abap-mcp-*` servers and asks you to map each to a role (`DEV`/`QA`/`PRD`/custom) and a **mode** (`dev`/`quality`/`production`). Server names are never hardcoded — they're connected globally per system, outside the plugin.
 - **Deployment mode** — `mcp` (push/activate/transport directly) or `manual` (generate code + an instruction sheet for you to apply via ADT)
 - **Products/modules** — solution-area codes in scope (`FIN`, `SLS`, `SRC`, `MFG`, `SCM`, `HCM`, `AST`, `SVC`, `CORE`)
@@ -247,14 +247,13 @@ your-project/
 
 ## Configuration reference (`.sdlc/config.json`)
 
-Only non-secret settings live here. `JIRA_URL`, `JIRA_PROJECTS_FILTER`, `CONFLUENCE_URL`, `CONFLUENCE_SPACES_FILTER`, and `READ_ONLY_MODE` are Vincit-wide constants hardcoded directly in `.mcp.json` (not per-project — note `READ_ONLY_MODE` defaults to `false`, i.e. write access is on by default). `JIRA_API_TOKEN` and `CONFLUENCE_API_TOKEN` are set as real environment variables on your machine and referenced by `.mcp.json` as `${VAR}` placeholders — never written to this file or committed anywhere.
+Only non-secret settings live here. `ATLASSIAN_OAUTH_CLOUD_ID`, `JIRA_PROJECTS_FILTER`, `CONFLUENCE_SPACES_FILTER`, and `READ_ONLY_MODE` are Vincit-wide constants hardcoded directly in `.mcp.json` (not per-project — note `READ_ONLY_MODE` defaults to `false`, i.e. write access is on by default). `ATLASSIAN_OAUTH_ACCESS_TOKEN` is set as a real environment variable on your machine and referenced by `.mcp.json` as `${VAR}` — never written to this file or committed anywhere. `atlassian_login` below is just your email, not a secret — it exists because the bearer token authenticates as a shared service account, not you, so "assigned to me" queries need your real identity explicitly.
 
 ```json
 {
   "connectors": {
     "mcp-atlassian": {
-      "jira_username": "",
-      "confluence_username": ""
+      "atlassian_login": ""
     }
   },
   "sap": {
