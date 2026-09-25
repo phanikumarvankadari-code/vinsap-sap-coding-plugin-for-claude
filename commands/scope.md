@@ -9,7 +9,8 @@ Invoke the `scope-builder` skill.
 3. Produce a consolidated analysis summary: what's known, what's requested, any conflicts across sources.
 4. List open questions/gaps found.
 5. Ask the user those open questions directly, one at a time or grouped, to close the gaps.
-6. Write the finalized scope to `tickets/<active>/outputs/scope.md`.
-7. Append an entry to `tickets/<active>/timeline.jsonl` and update `tickets/<active>/state.json`.
+6. Ask which functional/solution area(s) this ticket falls under (`FIN`/`SLS`/`SRC`/`MFG`/`SCM`/`HCM`/`AST`/`SVC`/`CORE`) — stored as `functional_areas` in `state.json`, used later to pre-fill the `Z*` package search in `abap-developer`.
+7. Write the finalized scope to `tickets/<active>/outputs/scope.md`.
+8. Append an entry to `tickets/<active>/timeline.jsonl` and update `tickets/<active>/state.json`.
 
 This command is aliased as `/vinsap:analyze` and `/vinsap:start` — identical behavior.
