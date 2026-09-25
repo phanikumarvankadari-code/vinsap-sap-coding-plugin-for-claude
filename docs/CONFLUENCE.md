@@ -37,25 +37,26 @@ VinSAP works across **many tickets in one project**. Connectors/systems/preferen
 
 **Once, project-level:**
 
-1. **`/vinsap:onboard`** (alias `/vinsap:init`) — first run just checks prerequisites
-2. **`/vinsap:config`** — connectors, SAP system modes, deployment mode, product scope, diagram tool, review model tiers, screenshot mode, git usage — shared by every ticket
+1. **`/vinsap:config`** — connectors, SAP system modes, deployment mode, product scope, diagram tool, review model tiers, screenshot mode, git usage — shared by every ticket
+2. **`/vinsap:intent`** (alias `/vinsap:init`) — first run just checks prerequisites
 
 **Per ticket, repeat for each one:**
 
-3. **`/vinsap:onboard`** again — starts a new ticket: ticket ID, input source (Jira vs manual drop), creates `tickets/<TICKET-ID>/`, sets it active
-4. **`/vinsap:analyze`** (aliases `/vinsap:scope`, `/vinsap:start`) — reads that ticket's inputs, asks clarifying questions, finalizes scope
-5. **`/vinsap:milestones`** — breaks scope into milestones, tagged ABAP/Fiori/mixed
-6. **`/vinsap:develop`** — generates code + tests per milestone, asks for package/transport selection
+3. **`/vinsap:intent`** again — starts a new ticket: ticket ID, input source (Jira vs manual drop), creates `tickets/<TICKET-ID>/`, writes `intent.md`, sets it active
+4. **`/vinsap:spec`** (aliases `/vinsap:scope`, `/vinsap:start`) — reads intent + that ticket's inputs, asks clarifying questions plus the ticket's functional/solution area(s) (used later to pre-fill package search), finalizes `outputs/spec.md`
+5. **`/vinsap:plan`** — breaks the spec into milestones, tagged ABAP/Fiori/mixed, writes `outputs/plan.md`
+6. **`/vinsap:build`** — generates code + tests per milestone, asks for package/transport selection
 7. **`/vinsap:review`** — quick guideline check, runs in the background on a cheap model
 8. **`/vinsap:test`** — runs tests, auto-fixes failures up to a retry cap
    *(steps 6–8 repeat per milestone until tests pass)*
-9. **`/vinsap:deep-review`** — thorough, cross-milestone review, runs in the foreground on a stronger model, can ask clarifying questions
-10. **`/vinsap:docs`** — generates Functional/Technical/Test documents from Vincit templates, optionally publishes to Confluence (new pages default into the [ADSD documentation folder](https://vincit.atlassian.net/wiki/spaces/ADSD/folder/10682105864))
+9. **`/vinsap:deep-review`** *(optional)* — thorough, cross-milestone review, runs in the foreground on a stronger model, can ask clarifying questions. Not a hard gate — `/vinsap:ship` decides whether it's required, asked once per ticket (Always/Ask each time/Skip)
+10. **`/vinsap:ship`** — deploy-readiness checklist, applies the deep-review preference, writes `outputs/ship.md`. Doesn't release/deploy anything itself. Cadence depends on milestone type: **ABAP/mixed** — per milestone, right after `test` passes, transport staged incrementally. **Fiori/UI5** — once, after every Fiori milestone in the ticket is built/tested, since app deployment isn't incremental
+11. **`/vinsap:docs`** — generates Functional/Technical/Test documents from Vincit templates, optionally publishes to Confluence (new pages default into the [ADSD documentation folder](https://vincit.atlassian.net/wiki/spaces/ADSD/folder/10682105864)); every publish/update also comments the page URL on the ticket's Jira issue
 
 Three commands work at any point, on the active ticket:
 
 - **`/vinsap:status`** — plain progress view of the active ticket, or `/vinsap:status all` to list every ticket
-- **`/vinsap:switch <TICKET-ID>`** — jump to a ticket already started, without re-onboarding it
+- **`/vinsap:switch <TICKET-ID>`** — jump to a ticket already started, without re-running `/vinsap:intent`
 - **`/vinsap:handoff`** — narrative summary of everything that happened on the active ticket, always saved into that ticket's `outputs/handoff/`, and optionally also published to Jira or Confluence
 
 ## System modes and guardrails
@@ -81,8 +82,9 @@ your-project/
     active_ticket.json     - which ticket is currently active
   tickets/
     ADSD-1204/
+      intent.md             - captured by /vinsap:intent
       inputs/               - raw material: docs, emails, conversations, Jira exports
-      outputs/              - generated scope, reviews, documents, handoff summaries
+      outputs/              - spec.md, plan.md, build/, reviews, ship.md, docs, handoff summaries
       state.json            - this ticket's current status
       timeline.jsonl          - this ticket's full history
     ADSD-1301/

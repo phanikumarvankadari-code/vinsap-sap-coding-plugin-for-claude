@@ -26,6 +26,7 @@ Follow `../_shared/context-contract.md` for read/write conventions.
    - **Create a new page** — defaults to `documentation.confluence_parent_id` from `.sdlc/config.json` (the ADSD space's documentation folder) as the parent, so it nests there rather than at the space root. Confirm with the user, don't silently assume a different parent.
    - **Update an existing page** (search/select) instead, if one already exists for this ticket/doc.
    - Attach the generated file to that page.
+   - **Every time a Confluence page is created or updated this way, add a comment on the ticket's Jira issue with that page's URL** (via `mcp-atlassian`) — creation gets a new comment, an update gets a fresh comment too (don't rely on the user finding an old link buried in history). Skip this if the ticket has no linked Jira issue (manually-dropped-input tickets).
 8. For the Test document, follow `.sdlc/config.json` → `documentation.screenshot_mode`:
    - `auto` — Playwright captures screenshots in the background (subagent, fire-and-forget) and they're embedded automatically.
    - `manual` — tell the user exactly which screens/actions to capture and where to drop them (`tickets/<active>/inputs/screenshots/`), then embed once supplied.

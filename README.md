@@ -1,3 +1,5 @@
+![VinSAP cover](assets/cover.jpeg)
+
 <p align="center">
   <img src="icon.svg" width="72" height="72" alt="Vincit" />
 </p>
@@ -45,7 +47,7 @@ It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension
 | Atlassian Service Account bearer token | There's no separate "MCP key" — `mcp-atlassian` authenticates via `ATLASSIAN_OAUTH_ACCESS_TOKEN`, a bearer token issued to an org-managed **Atlassian Service Account** (not your personal API token, not a personal OAuth login). Get it from 1Password: vault "AI driven SAP development", item "ai-driven-sap-RW API token", then set it per-OS — see [prerequisites.md § Configuring the Atlassian Service Account token](skills/onboarding-guide/references/prerequisites.md#configuring-the-atlassian-service-account-token) for macOS/Windows steps. Never paste it into chat, a config file, or anything committed | [Managing Service Accounts](https://support.atlassian.com/organization-administration/docs/manage-service-accounts/) |
 | antigravity CLI *(optional)* | Only needed if configured as the diagram/image-generation tool instead of draw.io/mermaid | |
 
-`/vinsap:onboard` (alias `/vinsap:init`) checks these and offers install guidance for anything missing.
+`/vinsap:intent` (alias `/vinsap:init`) checks these and offers install guidance for anything missing.
 
 ## Installing
 
@@ -71,48 +73,41 @@ VinSAP works across **many tickets in one project**. Setup is two-phase: connect
 **Once, project-level:**
 
 ```
-/vinsap:onboard          # or /vinsap:init — first run just does prereqs
 /vinsap:config           # connectors, system modes, deployment mode, review model tiers — shared by every ticket
+/vinsap:intent           # or /vinsap:init — first run just does prereqs
 ```
 
 **Per ticket — repeat this whole flow for each one:**
 
 ```
-/vinsap:onboard          # this time: starts a new ticket, creates tickets/<ID>/, sets it active
-/vinsap:analyze          # or /vinsap:scope, /vinsap:start
-/vinsap:milestones
-/vinsap:develop  → /vinsap:review → /vinsap:test    (repeat per milestone until green)
-/vinsap:deep-review
+/vinsap:intent           # this time: starts a new ticket, creates tickets/<ID>/, writes intent.md, sets it active
+/vinsap:spec             # or /vinsap:scope, /vinsap:start — writes outputs/spec.md
+/vinsap:plan             # writes outputs/plan.md, breaks scope into milestones
+/vinsap:build  → /vinsap:review → /vinsap:test        (repeat per milestone until green)
+/vinsap:deep-review      # optional — see below
+/vinsap:ship             # cadence differs by milestone type — see below
 /vinsap:docs
 ```
 
-`/vinsap:status` and `/vinsap:handoff` work at any point, on the active ticket. `/vinsap:switch <TICKET-ID>` jumps back to a ticket you already started, without re-onboarding it.
+**Ship cadence depends on the milestone's tag:**
+
+- **ABAP** milestones ship **per milestone** — `build → review → test → ship` each time, transport staged incrementally as each object is done.
+- **Fiori/UI5** milestones ship **once, at the end of that track** — `build → review → test` repeats for every Fiori milestone, but `ship` only runs after the last one, since app-level deployment isn't incremental like a transport.
+- **Mixed** milestones follow the ABAP cadence (transport-based).
+
+`/vinsap:deep-review` is **optional**, not a hard gate. The first time `/vinsap:ship` runs for a ticket, it asks whether to require deep-review before shipping — **Always** / **Ask each time** / **Skip** — and remembers that choice in the ticket's `state.json` for later milestones, without re-asking.
+
+`/vinsap:status` and `/vinsap:handoff` work at any point, on the active ticket. `/vinsap:switch <TICKET-ID>` jumps back to a ticket you already started, without re-running `/vinsap:intent`.
 
 ## The pipeline, at a glance
 
 ![VinSAP plugin pipeline](assets/process-flow.jpeg)
 
-`/vinsap:test` failures loop internally (auto-fix + re-test) up to a retry cap before flagging the milestone back to `/vinsap:develop` for the user to weigh in — `/vinsap:status` and `/vinsap:handoff` are callable at any point, not just at the phase boundaries shown.
+*(diagram above reflects the pre-rename command names — an updated version is in progress)*
+
+`/vinsap:test` failures loop internally (auto-fix + re-test) up to a retry cap before flagging the milestone back to `/vinsap:build` for the user to weigh in — `/vinsap:status` and `/vinsap:handoff` are callable at any point, not just at the phase boundaries shown.
 
 ## Commands
-
-<details>
-<summary><b>/vinsap:onboard</b> <sub>(alias <code>/vinsap:init</code>)</sub> — project setup (first run) or start a new ticket</summary>
-
-**First run for a project** (no `.sdlc/config.json` yet): checks prerequisites, offers install guidance, runs a short walkthrough, points you to `/vinsap:config`.
-
-**Every run after that**: starts a **new ticket** — asks for a ticket ID, asks whether inputs come from a **Jira ticket** (pulled via `mcp-atlassian` into `tickets/<ID>/inputs/jira/`) or a **manual drop** into `tickets/<ID>/inputs/{docs,emails,conversations}/`, creates that ticket's folder structure, and sets it active.
-
-To resume a ticket you already started instead of creating a new one, use `/vinsap:switch <TICKET-ID>`.
-
-</details>
-
-<details>
-<summary><b>/vinsap:switch</b> — change which ticket is active</summary>
-
-`/vinsap:switch <TICKET-ID>` points subsequent commands at a different, already-started ticket — without creating anything. Errors (rather than creating the folder) if that ticket doesn't exist; use `/vinsap:onboard` for a genuinely new one. Shows a quick status summary of the ticket you switch into.
-
-</details>
 
 <details>
 <summary><b>/vinsap:config</b> — connectors, system modes, deployment mode, preferences</summary>
@@ -122,7 +117,6 @@ Creates/updates `.sdlc/config.json`:
 - **Connectors** — `mcp-atlassian` (asks for your Jira/Atlassian login email, since the bearer token authenticates as a shared service account, not you — "assigned to me" queries use this instead of `currentUser()`; everything else, including site URLs, project/space filters, and read-only mode, is hardcoded Vincit-wide in `.mcp.json`). The bearer token itself is set as an environment variable, never stored in config.
 - **SAP systems** — discovers currently-connected `vincit-abap-mcp-*` servers and asks you to map each to a role (`DEV`/`QA`/`PRD`/custom) and a **mode** (`dev`/`quality`/`production`). Server names are never hardcoded — they're connected globally per system, outside the plugin.
 - **Deployment mode** — `mcp` (push/activate/transport directly) or `manual` (generate code + an instruction sheet for you to apply via ADT)
-- **Products/modules** — solution-area codes in scope (`FIN`, `SLS`, `SRC`, `MFG`, `SCM`, `HCM`, `AST`, `SVC`, `CORE`)
 - **Diagram tool** — default `draw.io`, mermaid as a lightweight fallback
 - **Review model tiers** — cheap/fast model for `/vinsap:review`, a smarter model for `/vinsap:deep-review`
 - **Screenshot mode** — `auto` (Playwright captures in the background) or `manual` (you supply screenshots)
@@ -134,28 +128,46 @@ Set **once** for the whole project — shared by every ticket, not re-asked per 
 </details>
 
 <details>
-<summary><b>/vinsap:analyze</b> <sub>(aliases <code>/vinsap:scope</code>, <code>/vinsap:start</code>)</sub> — read the active ticket's inputs, ask gaps, finalize scope</summary>
+<summary><b>/vinsap:intent</b> <sub>(alias <code>/vinsap:init</code>)</sub> — project setup (first run) or start a new ticket</summary>
 
-Reads everything under the active ticket's `inputs/`, produces a consolidated analysis summary (what's known, what's requested, any conflicts across sources), lists open questions, and asks you those questions directly. Writes the finalized scope to that ticket's `outputs/scope.md`.
+**First run for a project** (no `.sdlc/config.json` yet): checks prerequisites, offers install guidance, runs a short walkthrough, points you to `/vinsap:config`.
 
-</details>
+**Every run after that**: starts a **new ticket** — asks for a ticket ID, asks whether inputs come from a **Jira ticket** (pulled via `mcp-atlassian` into `tickets/<ID>/inputs/jira/`) or a **manual drop** into `tickets/<ID>/inputs/{docs,emails,conversations}/`, creates that ticket's folder structure, synthesizes `tickets/<ID>/intent.md` from those inputs, and sets the ticket active.
 
-<details>
-<summary><b>/vinsap:milestones</b> — break scope into milestones, tagged ABAP/Fiori/mixed</summary>
-
-Queries the target SAP system for reusable objects before proposing new ones. Breaks the scope into discrete, independently testable milestones, each tagged `abap`, `fiori`, or `mixed`. Prefers smaller milestones mapping to a single class/app/capability. Writes the plan into that ticket's `state.json`.
+To resume a ticket you already started instead of creating a new one, use `/vinsap:switch <TICKET-ID>`.
 
 </details>
 
 <details>
-<summary><b>/vinsap:develop</b> — generate code + tests for the next milestone</summary>
+<summary><b>/vinsap:switch</b> — change which ticket is active</summary>
+
+`/vinsap:switch <TICKET-ID>` points subsequent commands at a different, already-started ticket — without creating anything. Errors (rather than creating the folder) if that ticket doesn't exist; use `/vinsap:intent` for a genuinely new one. Shows a quick status summary of the ticket you switch into.
+
+</details>
+
+<details>
+<summary><b>/vinsap:spec</b> <sub>(aliases <code>/vinsap:scope</code>, <code>/vinsap:start</code>)</sub> — read the active ticket's intent + inputs, ask gaps, finalize the spec</summary>
+
+Reads `intent.md` and everything under the active ticket's `inputs/`, produces a consolidated analysis (what's known, what's requested, any conflicts across sources), lists open questions, and asks you those questions directly. Also asks which functional/solution area(s) (`FIN`/`SLS`/`SRC`/`MFG`/`SCM`/`HCM`/`AST`/`SVC`/`CORE`) the ticket falls under — stored as `functional_areas` in `state.json`, later pre-fills the `Z*` package search in `/vinsap:build`. Writes the finalized spec to that ticket's `outputs/spec.md`.
+
+</details>
+
+<details>
+<summary><b>/vinsap:plan</b> — break the spec into milestones, tagged ABAP/Fiori/mixed</summary>
+
+Queries the target SAP system for reusable objects before proposing new ones. Breaks the spec into discrete, independently testable milestones, each tagged `abap`, `fiori`, or `mixed`. Prefers smaller milestones mapping to a single class/app/capability. Writes the plan into that ticket's `outputs/plan.md` and `state.json`.
+
+</details>
+
+<details>
+<summary><b>/vinsap:build</b> — generate code + tests for the next milestone</summary>
 
 Routes to `abap-developer` (ABAP path) or `fiori-developer` (Fiori/UI5 path) based on the milestone's tag.
 
 - **ABAP** — class-based (preferred over reports/includes), Clean ABAP style, `ZMASTER` package hierarchy, hard guardrails, transport handling (`[AI-VSP] <MODULE> | <TICKET_ID> | <desc>` naming, stage in `$TMP`, never releases), auto-generated ABAP Unit tests.
 - **Fiori/UI5** — thin controllers, extracted testable logic, auto-generated QUnit (unit) and Playwright (e2e) tests.
 
-Honors `sap.deployment_mode`: `mcp` pushes directly; `manual` writes code + an instruction sheet to that ticket's `outputs/develop/<milestone>/` for you to apply via ADT.
+Honors `sap.deployment_mode`: `mcp` pushes directly; `manual` writes code + an instruction sheet to that ticket's `outputs/build/<milestone>/` for you to apply via ADT.
 
 </details>
 
@@ -174,16 +186,31 @@ Runs ABAP Unit and QUnit tests; Playwright e2e tests run as a background subagen
 </details>
 
 <details>
-<summary><b>/vinsap:deep-review</b> — thorough, cross-milestone, foreground, smarter model</summary>
+<summary><b>/vinsap:deep-review</b> <sub>(optional)</sub> — thorough, cross-milestone, foreground, smarter model</summary>
 
-Runs in the foreground (model from `review.deep_model`) so it can ask you clarifying questions directly if it hits a gap. Checks cross-milestone consistency, package/layer-dependency compliance, security (including any guardrail bypasses taken), and performance. This is the gate before documentation.
+Runs in the foreground (model from `review.deep_model`) so it can ask you clarifying questions directly if it hits a gap. Checks cross-milestone consistency, package/layer-dependency compliance, security (including any guardrail bypasses taken), and performance.
+
+**Not a hard gate.** `/vinsap:ship` decides whether it's required — see below.
+
+</details>
+
+<details>
+<summary><b>/vinsap:ship</b> — deploy-readiness checklist, cadence depends on milestone type</summary>
+
+The first time this runs for a ticket, asks whether `/vinsap:deep-review` should be required before shipping — **Always** / **Ask each time** / **Skip** — and stores the choice in that ticket's `state.json` for later milestones, without re-asking.
+
+**ABAP/mixed milestones** — runs **per milestone**, right after `test` passes: confirms tests are green, applies the deep-review preference, and lists the transport(s) touched by that milestone. Transport is staged incrementally, so shipping happens as each one is done.
+
+**Fiori/UI5 milestones** — runs **once**, after every Fiori milestone for the ticket has built/tested clean: app-level deployment isn't incremental, so it's deferred to the end of that track rather than run per milestone.
+
+Doesn't release/deploy anything itself — release stays a manual, outside-the-plugin step — just marks work ready and writes `outputs/ship.md` (appended to per ABAP milestone, or written once for the Fiori track).
 
 </details>
 
 <details>
 <summary><b>/vinsap:docs</b> — interactive Functional/Technical/Test documents</summary>
 
-Asks which document to create, lets you pick sections, loads the matching Vincit `.docx` template, and fills it conversationally — pulling what it can from scope/code/tests, asking you for the rest. Follows a plain-English, bullet-first writing style, generates diagrams via the `illustrator` skill, and flags the draft for UX review before saving. Can publish to Confluence (new page — defaults to the `documentation.confluence_parent_id` folder — or update existing) with the document attached. Test-doc screenshots follow `documentation.screenshot_mode`.
+Asks which document to create, lets you pick sections, loads the matching Vincit `.docx` template, and fills it conversationally — pulling what it can from intent/spec/plan/code/tests, asking you for the rest. Follows a plain-English, bullet-first writing style, generates diagrams via the `illustrator` skill, and flags the draft for UX review before saving. Can publish to Confluence (new page — defaults to the `documentation.confluence_parent_id` folder — or update existing) with the document attached — every create/update also drops a comment with the page URL on the ticket's Jira issue, so the link's never buried. Test-doc screenshots follow `documentation.screenshot_mode`.
 
 </details>
 
@@ -230,11 +257,15 @@ your-project/
     active_ticket.json          # {"active_ticket": "ADSD-1204"} — which ticket commands target right now
   tickets/
     ADSD-1204/
+      intent.md                  # captured by /vinsap:intent
       inputs/
         docs/ emails/ conversations/ jira/
       outputs/
-        scope.md
+        spec.md                  # /vinsap:spec
+        plan.md                  # /vinsap:plan
+        build/<milestone>/       # only when deployment_mode is manual
         reviews/<milestone>-review.md, <milestone>-deep-review.md
+        ship.md                  # /vinsap:ship
         docs/                    # generated Functional/Technical/Test documents
         handoff/
       state.json                 # this ticket's stage + per-milestone status — powers /vinsap:status
@@ -243,11 +274,11 @@ your-project/
       ...                         # same structure, a separate ticket in flight
 ```
 
-`/vinsap:onboard` creates a new `tickets/<TICKET-ID>/` and sets it active; `/vinsap:switch <TICKET-ID>` moves between ones you've already started.
+`/vinsap:intent` creates a new `tickets/<TICKET-ID>/` and sets it active; `/vinsap:switch <TICKET-ID>` moves between ones you've already started.
 
 ## Configuration reference (`.sdlc/config.json`)
 
-Only non-secret settings live here. `ATLASSIAN_OAUTH_CLOUD_ID`, `JIRA_PROJECTS_FILTER`, `CONFLUENCE_SPACES_FILTER`, and `READ_ONLY_MODE` are Vincit-wide constants hardcoded directly in `.mcp.json` (not per-project — note `READ_ONLY_MODE` defaults to `false`, i.e. write access is on by default). `ATLASSIAN_OAUTH_ACCESS_TOKEN` is set as a real environment variable on your machine and referenced by `.mcp.json` as `${VAR}` — never written to this file or committed anywhere. `atlassian_login` below is just your email, not a secret — it exists because the bearer token authenticates as a shared service account, not you, so "assigned to me" queries need your real identity explicitly.
+Only non-secret settings live here. `ATLASSIAN_OAUTH_CLOUD_ID`, `JIRA_PROJECTS_FILTER`, `CONFLUENCE_SPACES_FILTER`, and `READ_ONLY_MODE` are Vincit-wide constants hardcoded directly in `.mcp.json` (not per-project — note `READ_ONLY_MODE` defaults to `false`, i.e. write access is on by default). `ATLASSIAN_OAUTH_ACCESS_TOKEN` is set as a real environment variable on your machine and referenced by `.mcp.json` as `${VAR}` — never written to this file or committed anywhere. `atlassian_login` below is just your email, not a secret — it exists because the bearer token authenticates as a shared service account, not you, so "assigned to me" queries need your real identity explicitly. `sap.default_package` is only a fallback search-prefix hint (e.g. `ZSD`) — `/vinsap:build` always searches and asks you to pick a real `Z*` package from the target system, never auto-selects it. The primary hint comes per-ticket instead: `/vinsap:spec` asks which functional/solution area(s) (`FIN`/`SLS`/`SRC`/`MFG`/`SCM`/`HCM`/`AST`/`SVC`/`CORE`) the ticket falls under and pre-fills the package search from that (there's no project-wide "products" list anymore — it went unused).
 
 ```json
 {
@@ -260,10 +291,9 @@ Only non-secret settings live here. `ATLASSIAN_OAUTH_CLOUD_ID`, `JIRA_PROJECTS_F
     "systems": {
       "DEV": { "mcp_server": "vincit-abap-mcp-S4H", "mode": "dev" }
     },
-    "default_package": "$TMP",
+    "default_package": "ZSD",
     "deployment_mode": "mcp"
   },
-  "products": ["FIN", "SLS", "SRC", "MFG", "SCM", "HCM", "AST", "SVC", "CORE"],
   "diagram_tool": "drawio",
   "review": { "quick_model": "haiku", "deep_model": "opus" },
   "documentation": { "screenshot_mode": "auto", "confluence_parent_id": "10682105864" },
