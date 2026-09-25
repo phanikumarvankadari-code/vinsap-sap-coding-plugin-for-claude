@@ -20,7 +20,7 @@ It connects to SAP through the **Vincit SAP MCP** (a VS Code extension, connecte
 - **Vincit SAP MCP** (VS Code extension) — connect this *before* running `/vinsap:config`
 - **uv/uvx** — launches the Jira/Confluence connector. [uv docs](https://docs.astral.sh/uv/)
 - **mcp-atlassian** — Jira/Confluence connector, already declared in the plugin, launched via `uvx`. Site URLs, project/space filters, and read-only mode are hardcoded Vincit-wide constants in `.mcp.json`; only usernames come from `/vinsap:config`. **API tokens are set as environment variables on your machine, never stored in any config file.**
-- **Atlassian Service Account bearer token** — there's no separate "MCP key"; `mcp-atlassian` authenticates via `ATLASSIAN_OAUTH_ACCESS_TOKEN`, a bearer token issued to an org-managed Atlassian Service Account (not a personal API token, not a personal OAuth login). Get it from Vincit's shared 1Password vault, then set it as an env var per-OS (macOS: `~/.zshrc`; Windows: PowerShell `SetEnvironmentVariable` or `setx`) before launching Claude Code. Never share it or commit it anywhere.
+- **Atlassian Service Account bearer token** — there's no separate "MCP key"; `mcp-atlassian` authenticates via `ATLASSIAN_OAUTH_ACCESS_TOKEN`, a bearer token issued to an org-managed Atlassian Service Account (not a personal API token, not a personal OAuth login). Get it from 1Password: vault "AI driven SAP development", item "ai-driven-sap-RW API token", then set it as an env var per-OS (macOS: `~/.zshrc`; Windows: PowerShell `SetEnvironmentVariable` or `setx`) before launching Claude Code. Never share it or commit it anywhere.
 
 ## Installing
 
