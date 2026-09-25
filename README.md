@@ -49,6 +49,39 @@ It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension
 
 `/vinsap:intent` (alias `/vinsap:init`) checks these and offers install guidance for anything missing.
 
+### Configuring the Atlassian Service Account token
+
+`ATLASSIAN_OAUTH_ACCESS_TOKEN` must exist in your environment **before** Claude Code launches — setting it in a different terminal afterward won't be picked up, so restart your Claude Code session once it's set.
+
+**Get the value from 1Password first** — vault **"AI driven SAP development"**, item **"ai-driven-sap-RW API token"**. Copy the token value; never paste it into chat, a config file, or anything committed.
+
+**macOS / Linux (zsh, the default shell):**
+```bash
+echo 'export ATLASSIAN_OAUTH_ACCESS_TOKEN="<paste the token from 1Password>"' >> ~/.zshrc
+source ~/.zshrc
+```
+(Using bash instead of zsh? Use `~/.bashrc` or `~/.bash_profile` instead of `~/.zshrc`.)
+
+**Windows (PowerShell):**
+```powershell
+[System.Environment]::SetEnvironmentVariable('ATLASSIAN_OAUTH_ACCESS_TOKEN', '<paste the token from 1Password>', 'User')
+```
+Persists across sessions for your user account. Close and reopen PowerShell/Claude Code afterward. Prefer it scoped to PowerShell only? Add `$env:ATLASSIAN_OAUTH_ACCESS_TOKEN = "<token>"` to your `$PROFILE` script instead.
+
+**Windows (Command Prompt):**
+```cmd
+setx ATLASSIAN_OAUTH_ACCESS_TOKEN "<paste the token from 1Password>"
+```
+Same persistence as the PowerShell method; also needs a new terminal window to take effect.
+
+**Verify it worked**, either OS:
+```bash
+echo $ATLASSIAN_OAUTH_ACCESS_TOKEN
+```
+Then check `/mcp` inside Claude Code lists `mcp-atlassian` as connected.
+
+Token refresh is your responsibility — BYOT tokens aren't auto-refreshed, so re-export a fresh value from 1Password if Jira/Confluence calls start failing with auth errors.
+
 ## Installing
 
 ```
