@@ -1,5 +1,5 @@
 ---
-description: Set up connectors, product/module scope, prerequisites, and preferences for this engagement.
+description: Set up connectors, SAP systems, prerequisites, and preferences for this engagement.
 ---
 
 Invoke the `config-manager` skill to create or update `.sdlc/config.json`:

@@ -7,7 +7,7 @@ Mode per connected system is recorded in `.sdlc/config.json` `sap.systems.<ROLE>
 ## `dev`
 
 - Full access: create, update, read, run — all guardrails in `guardrails.md` apply as written, including the explicit-bypass exception for DB mutations.
-- This is where `/vinsap:develop` normally targets.
+- This is where `/vinsap:build` normally targets.
 
 ## `quality`
 

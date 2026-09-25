@@ -10,7 +10,7 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 ## Choosing the tool
 
 - **draw.io** (default, per `.sdlc/config.json` `diagram_tool`) — for architecture diagrams and anything going into a Functional/Technical document. Use `references/drawio-theme/` for consistent styling.
-- **mermaid** — lightweight fallback for inline diagrams in markdown output (e.g. a quick milestone flow shown in chat or in `tickets/<active>/outputs/scope.md`) where a full draw.io file is overkill. See `references/mermaid-patterns.md`.
+- **mermaid** — lightweight fallback for inline diagrams in markdown output (e.g. a quick milestone flow shown in chat or in `tickets/<active>/outputs/plan.md`) where a full draw.io file is overkill. See `references/mermaid-patterns.md`.
 
 ## Steps
 
