@@ -11,7 +11,7 @@ ZMASTER                              Root, Structure pkg
     └── ZMASTER_<AREA><APP><LAYER>   Leaf development pkg
 ```
 
-1. **Solution-area codes** — use exactly these three-letter tokens: `FIN` Finance · `SLS` Sales · `SRC` Sourcing & Procurement · `MFG` Manufacturing · `SCM` Supply Chain · `HCM` Human Capital · `AST` Asset Management · `SVC` Service · `CORE` shared. Adding a new area requires the user's explicit approval.
+1. **Solution-area codes** — classical ECC module codes, not invented ones: `FI` Finance · `SD` Sales & Distribution · `MM` Materials Management · `PP` Production Planning · `LE` Logistics Execution · `HR` Human Resources · `AA` Asset Accounting · `CS` Customer Service · `CORE` shared (not a real module, cross-cutting only). Adding a new area requires the user's explicit approval.
 
 2. **Layer codes** — use exactly these four, and only these: `DDIC` types & DDIC objects · `DB` CDS/AMDP/table access · `APP` business logic (no `SELECT`, no UI) · `UI` reports, OData/Fiori projections, ALV controllers.
 
@@ -22,10 +22,10 @@ ZMASTER                              Root, Structure pkg
 5. **One application per `<APP>` token** — a self-contained capability (a report, a Fiori app, a background job, an interface) lives under a single `<APP>` namespace with its own layer packages. Empty layers are *omitted*, never repurposed.
 
 6. **Object-name prefix tracks the package** — objects carry the area+app token from their package. Examples:
-   - Class in `ZMASTER_SLS_OSOSTK_APP` → `ZCL_SLS_OSOSTK_<role>`
-   - Interface in same package → `ZIF_SLS_OSOSTK_<role>`
-   - CDS in `ZMASTER_SLS_OSOSTK_DB` → `ZR_SlsOsoStk_<entity>` (RAP root) / `ZC_SlsOsoStk_<entity>` (consumer)
-   - Report in `..._UI` → `ZADT_SLS_OSOSTK_<name>`
+   - Class in `ZMASTER_SD_OSOSTK_APP` → `ZCL_SD_OSOSTK_<role>`
+   - Interface in same package → `ZIF_SD_OSOSTK_<role>`
+   - CDS in `ZMASTER_SD_OSOSTK_DB` → `ZR_SdOsoStk_<entity>` (RAP root) / `ZC_SdOsoStk_<entity>` (consumer)
+   - Report in `..._UI` → `ZADT_SD_OSOSTK_<name>`
 
 7. **30-character cap** — SAP package names are capped at 30 chars. Abbreviate the `<APP>` token (max 8 chars, drop vowels if needed), never the `ZMASTER_<AREA>_` prefix.
 

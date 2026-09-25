@@ -11,7 +11,7 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 
 1. Read `tickets/<active>/timeline.jsonl` in full and `tickets/<active>/state.json` for current status.
 2. Format a narrative **markdown** summary, in chronological order:
-   - What happened (grouped by stage: onboard, config, scope, milestones, develop, review, test, deep-review, docs)
+   - What happened (grouped by stage: config, intent, spec, plan, build, review, test, deep-review, ship, docs)
    - Key decisions made (including any `guardrail_bypass` entries — call these out explicitly)
    - Code changes (objects created/modified, transports touched)
    - Current milestone status (pull from `tickets/<active>/state.json`)

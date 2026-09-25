@@ -9,7 +9,7 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 
 ## Steps
 
-1. Identify the target milestone(s) from `tickets/<active>/state.json` (default: all milestones in `develop: "done"` state not yet `test: "done"`).
+1. Identify the target milestone(s) from `tickets/<active>/state.json` (default: all milestones in `build: "built"` state not yet `test: "done"`).
 2. Run **ABAP Unit** tests via `vincit-abap-mcp-<SID>` MCP for ABAP milestones.
 3. Run **QUnit** tests for Fiori/UI5 milestones.
 4. Run **Playwright** e2e tests as a **background subagent** (fire-and-forget) — do not block the main session waiting on browser tests.

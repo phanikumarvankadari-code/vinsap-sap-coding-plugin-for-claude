@@ -1,16 +1,5 @@
 ---
-description: Read the active ticket's inputs/, analyze, ask clarifying questions, and finalize the scope. Alias of /vinsap:analyze and /vinsap:start.
+description: Read the active ticket's intent + inputs/, ask clarifying questions, and finalize the spec. Legacy alias of /vinsap:spec.
 ---
 
-Invoke the `scope-builder` skill.
-
-1. Resolve the active ticket from `.sdlc/active_ticket.json` (per `_shared/context-contract.md`) — if none is active, tell the user to run `/vinsap:onboard` or `/vinsap:switch` first.
-2. Read everything under `tickets/<active>/inputs/` (`docs/`, `emails/`, `conversations/`, `jira/`).
-3. Produce a consolidated analysis summary: what's known, what's requested, any conflicts across sources.
-4. List open questions/gaps found.
-5. Ask the user those open questions directly, one at a time or grouped, to close the gaps.
-6. Ask which functional/solution area(s) this ticket falls under (`FIN`/`SLS`/`SRC`/`MFG`/`SCM`/`HCM`/`AST`/`SVC`/`CORE`) — stored as `functional_areas` in `state.json`, used later to pre-fill the `Z*` package search in `abap-developer`.
-7. Write the finalized scope to `tickets/<active>/outputs/scope.md`.
-8. Append an entry to `tickets/<active>/timeline.jsonl` and update `tickets/<active>/state.json`.
-
-This command is aliased as `/vinsap:analyze` and `/vinsap:start` — identical behavior.
+Invoke the `scope-builder` skill. See `commands/spec.md` for the full flow — this command is a legacy alias, kept for backward compatibility with the pre-rename command name.

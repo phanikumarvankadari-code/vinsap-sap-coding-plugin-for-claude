@@ -10,4 +10,4 @@ Invoke the `code-reviewer` skill in **deep mode**.
 4. Write findings to `tickets/<active>/outputs/reviews/<milestone-or-project>-deep-review.md` and summarize in chat.
 5. Append an entry to `tickets/<active>/timeline.jsonl`.
 
-Treat this as the gate before `/vinsap:docs`. For a fast, single-milestone, background check, use `/vinsap:review` instead.
+**Optional** — not a hard gate. `/vinsap:ship` asks once per ticket whether this is required before shipping (`Always`/`Ask each time`/`Skip`, stored in `state.json` as `preferences.deep_review`) and enforces that preference itself. For a fast, single-milestone, background check, use `/vinsap:review` instead.

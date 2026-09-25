@@ -10,15 +10,15 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 ## Steps
 
 1. Ask the user which document to create: **Functional**, **Technical**, or **Test**.
-2. Present the section list below for that doc type; let the user pick, add, or remove sections.
+2. Present the section list below for that doc type as a **checkbox list** (all checked by default) — let the user tick/untick which sections to include, and add a custom section if the list is missing one. Same checkbox approach for all three doc types, not just one.
 3. Load the matching template from `references/templates/`:
    - Functional → `Functional Document.docx`
    - Technical → `Technical Document.docx`
    - Test → `test-doc-template.md`
 4. Fill each section:
-   - Pull what's derivable from `tickets/<active>/outputs/scope.md`, `tickets/<active>/state.json`, milestone/code output (`abap-developer`/`fiori-developer` results), and test results (`test-runner` output, `tickets/<active>/outputs/reviews/`).
+   - Pull what's derivable from `tickets/<active>/intent.md`, `tickets/<active>/outputs/spec.md`, `tickets/<active>/outputs/plan.md`, `tickets/<active>/state.json`, milestone/code output (`abap-developer`/`fiori-developer` results), and test results (`test-runner` output, `tickets/<active>/outputs/reviews/`).
    - Ask the user for anything that can't be derived — same interview style as `scope-builder`.
-   - Follow `references/writing-style.md`: simple English, bullet points over long paragraphs, 15–25 words per bullet, prefer a diagram over a wall of text where one says it faster.
+   - Follow `references/writing-style.md`: simple, minimalistic English, bullet points over long paragraphs (no sub-headings inside a section — flat bullets for any step-by-step explanation), 15–25 words per bullet, **max ~70 words per section**, prefer a diagram over a wall of text where one says it faster.
    - Request diagrams from the `illustrator` skill wherever a section calls for one (architecture, process flow).
 5. Flag the drafted document for **UX review** before finalizing — surface it to the user explicitly as a review checkpoint, don't silently mark it done.
 6. Save the filled document to `tickets/<active>/outputs/docs/`.

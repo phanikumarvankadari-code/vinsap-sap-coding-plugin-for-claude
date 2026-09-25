@@ -11,8 +11,9 @@ project-root/
     active_ticket.json      # {"active_ticket": "TICKET-1204"} — which ticket commands target right now
   tickets/
     <TICKET-ID>/
+      intent.md               # captured by /vinsap:intent
       inputs/docs/ emails/ conversations/ jira/
-      outputs/scope.md, reviews/, docs/, handoff/, develop/
+      outputs/spec.md, plan.md, reviews/, docs/, handoff/, build/, ship.md
       state.json             # this ticket's stage + per-milestone status
       timeline.jsonl          # this ticket's append-only history
 ```
@@ -21,17 +22,19 @@ project-root/
 
 ## Resolving the active ticket
 
-1. Read `.sdlc/active_ticket.json`. If it doesn't exist or names a ticket whose `tickets/<ID>/` folder is missing, stop and tell the user to run `/vinsap:onboard` (new ticket) or `/vinsap:switch <TICKET-ID>` (existing ticket) — don't guess or silently create one.
+1. Read `.sdlc/active_ticket.json`. If it doesn't exist or names a ticket whose `tickets/<ID>/` folder is missing, stop and tell the user to run `/vinsap:intent` (new ticket) or `/vinsap:switch <TICKET-ID>` (existing ticket) — don't guess or silently create one.
 2. Every path below that says `<ticket>/...` means `tickets/<active_ticket>/...`, where `<active_ticket>` is that resolved ID.
-3. `/vinsap:onboard` creates a new ticket folder and sets it active. `/vinsap:switch <TICKET-ID>` changes which ticket is active without creating anything new (errors if that ticket folder doesn't exist).
+3. `/vinsap:intent` creates a new ticket folder and sets it active. `/vinsap:switch <TICKET-ID>` changes which ticket is active without creating anything new (errors if that ticket folder doesn't exist).
 
 ## Read from
 
+- `<ticket>/intent.md` — the captured ask, once it exists
 - `<ticket>/inputs/docs/`, `<ticket>/inputs/emails/`, `<ticket>/inputs/conversations/`, `<ticket>/inputs/jira/` — raw ticket inputs (read-only source material)
-- `.sdlc/config.json` — connectors, product scope, model tiers, screenshot mode, diagram tool, handoff destination (shared, not ticket-scoped)
+- `.sdlc/config.json` — connectors, model tiers, screenshot mode, diagram tool, handoff destination (shared, not ticket-scoped)
 - `.sdlc/active_ticket.json` — which ticket is active
 - `<ticket>/state.json` — current stage + per-milestone status for this ticket
-- `<ticket>/outputs/scope.md` — this ticket's finalized scope, once it exists
+- `<ticket>/outputs/spec.md` — this ticket's finalized spec, once it exists
+- `<ticket>/outputs/plan.md` — this ticket's milestone plan + object previews, once it exists
 
 ## Write to
 
@@ -46,7 +49,7 @@ Never write ticket-scoped output to `.sdlc/` or to another ticket's folder. Neve
 One JSON object per line:
 
 ```json
-{"timestamp": "2026-09-23T10:42:00Z", "stage": "develop", "skill": "abap-developer", "milestone": "M2", "action": "code_generated", "summary": "Created ZCL_SLS_OSOSTK_DISCOUNT with rate calculation logic", "files_touched": ["ZCL_SLS_OSOSTK_DISCOUNT"]}
+{"timestamp": "2026-09-23T10:42:00Z", "stage": "build", "skill": "abap-developer", "milestone": "M2", "action": "code_generated", "summary": "Created ZCL_SD_OSOSTK_DISCOUNT with rate calculation logic", "files_touched": ["ZCL_SD_OSOSTK_DISCOUNT"]}
 ```
 
 `action` is a short snake_case tag (`code_generated`, `test_generated`, `test_run`, `test_fixed`, `review_finding`, `milestone_completed`, `decision_made`, `doc_published`, `handoff_created`, `guardrail_bypass`, …). No `ticket` field needed inside the entry — the file's location under `tickets/<TICKET-ID>/` already scopes it.
@@ -55,14 +58,18 @@ One JSON object per line:
 
 ```json
 {
-  "stage": "develop",
+  "stage": "build",
+  "functional_areas": ["SD"],
+  "preferences": {"local_review": "ask", "deep_review": "always"},
   "milestones": [
-    {"id": "M1", "title": "...", "type": "abap", "develop": "done", "test": "done"},
-    {"id": "M2", "title": "...", "type": "fiori", "develop": "done", "test": "in_progress"}
+    {"id": "M1", "title": "...", "type": "abap", "build": "done", "test": "done", "ship": "done"},
+    {"id": "M2", "title": "...", "type": "fiori", "build": "done", "test": "in_progress", "ship": "pending"}
   ],
   "last_updated": "2026-09-23T10:42:00Z"
 }
 ```
+
+`preferences.local_review` is set once by `/vinsap:plan` (`Always`/`Ask each time`/`Skip`, lowercased) and consulted by `/vinsap:build` before moving code out of local staging. `preferences.deep_review` is set on the first `/vinsap:ship` run for the ticket and consulted by every `/vinsap:ship` run after.
 
 `/vinsap:status` reads this (for the active ticket, or a named one) directly. `/vinsap:handoff` reads `<ticket>/timeline.jsonl` directly. Neither should need to reconstruct history from git or from chat scrollback.
 
@@ -74,7 +81,7 @@ One JSON object per line:
 
 ## First-write behavior
 
-If `.sdlc/` does not exist yet when a skill runs, create it (this normally happens on the very first `/vinsap:onboard`). If `tickets/<ID>/` doesn't exist for the active ticket, that's an error state, not something to silently create — see "Resolving the active ticket" above.
+If `.sdlc/` does not exist yet when a skill runs, create it (this normally happens on the very first `/vinsap:intent`). If `tickets/<ID>/` doesn't exist for the active ticket, that's an error state, not something to silently create — see "Resolving the active ticket" above.
 
 ## Git tracking (optional, per `.sdlc/config.json` → `git.enabled`)
 
