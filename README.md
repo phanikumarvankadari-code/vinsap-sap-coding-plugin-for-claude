@@ -42,7 +42,7 @@ It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension
 | Vincit SAP MCP (VS Code extension) | Per-system SAP access — connect this **before** `/vinsap:config` | |
 | `uv`/`uvx` | Launches the `mcp-atlassian` connector. macOS: `brew install uv` · Windows: [docs.astral.sh/uv](https://docs.astral.sh/uv/getting-started/installation/) | [uv docs](https://docs.astral.sh/uv/) |
 | [mcp-atlassian](https://github.com/sooperset/mcp-atlassian) | Jira/Confluence connector, already declared in `.mcp.json` (launched via `uvx`). Non-secret settings come from `/vinsap:config`; **API tokens are set as environment variables, never stored in any config file** | [Claude Code MCP docs](https://code.claude.com/docs/en/mcp) |
-| Atlassian API token | There's no separate "MCP key" — `mcp-atlassian` authenticates as you, with your personal Atlassian API token. Generate one at [id.atlassian.com → API tokens](https://id.atlassian.com/manage-profile/security/api-tokens) ("Create API token", copy it — shown once), then `export JIRA_API_TOKEN="<token>"` and `export CONFLUENCE_API_TOKEN="<token>"` in your shell profile (same token works for both). Never paste it into chat, a config file, or anything committed | [Managing API tokens](https://support.atlassian.com/atlassian-account/docs/manage-api-tokens-for-your-atlassian-account/) |
+| Atlassian Service Account bearer token | There's no separate "MCP key" — `mcp-atlassian` authenticates via `ATLASSIAN_OAUTH_ACCESS_TOKEN`, a bearer token issued to an org-managed **Atlassian Service Account** (not your personal API token, not a personal OAuth login). Get it from 1Password: vault "AI driven SAP development", item "ai-driven-sap-RW API token", then set it per-OS — see [prerequisites.md § Configuring the Atlassian Service Account token](skills/onboarding-guide/references/prerequisites.md#configuring-the-atlassian-service-account-token) for macOS/Windows steps. Never paste it into chat, a config file, or anything committed | [Managing Service Accounts](https://support.atlassian.com/organization-administration/docs/manage-service-accounts/) |
 | antigravity CLI *(optional)* | Only needed if configured as the diagram/image-generation tool instead of draw.io/mermaid | |
 
 `/vinsap:onboard` (alias `/vinsap:init`) checks these and offers install guidance for anything missing.
@@ -119,7 +119,7 @@ To resume a ticket you already started instead of creating a new one, use `/vins
 
 Creates/updates `.sdlc/config.json`:
 
-- **Connectors** — `mcp-atlassian` (just Jira/Confluence username — everything else, including site URLs, project/space filters, and read-only mode, is hardcoded Vincit-wide in `.mcp.json`). API tokens are set as environment variables, never stored in config.
+- **Connectors** — `mcp-atlassian` (asks for your Jira/Atlassian login email, since the bearer token authenticates as a shared service account, not you — "assigned to me" queries use this instead of `currentUser()`; everything else, including site URLs, project/space filters, and read-only mode, is hardcoded Vincit-wide in `.mcp.json`). The bearer token itself is set as an environment variable, never stored in config.
 - **SAP systems** — discovers currently-connected `vincit-abap-mcp-*` servers and asks you to map each to a role (`DEV`/`QA`/`PRD`/custom) and a **mode** (`dev`/`quality`/`production`). Server names are never hardcoded — they're connected globally per system, outside the plugin.
 - **Deployment mode** — `mcp` (push/activate/transport directly) or `manual` (generate code + an instruction sheet for you to apply via ADT)
 - **Products/modules** — solution-area codes in scope (`FIN`, `SLS`, `SRC`, `MFG`, `SCM`, `HCM`, `AST`, `SVC`, `CORE`)
@@ -247,14 +247,13 @@ your-project/
 
 ## Configuration reference (`.sdlc/config.json`)
 
-Only non-secret settings live here. `JIRA_URL`, `JIRA_PROJECTS_FILTER`, `CONFLUENCE_URL`, `CONFLUENCE_SPACES_FILTER`, and `READ_ONLY_MODE` are Vincit-wide constants hardcoded directly in `.mcp.json` (not per-project — note `READ_ONLY_MODE` defaults to `false`, i.e. write access is on by default). `JIRA_API_TOKEN` and `CONFLUENCE_API_TOKEN` are set as real environment variables on your machine and referenced by `.mcp.json` as `${VAR}` placeholders — never written to this file or committed anywhere.
+Only non-secret settings live here. `ATLASSIAN_OAUTH_CLOUD_ID`, `JIRA_PROJECTS_FILTER`, `CONFLUENCE_SPACES_FILTER`, and `READ_ONLY_MODE` are Vincit-wide constants hardcoded directly in `.mcp.json` (not per-project — note `READ_ONLY_MODE` defaults to `false`, i.e. write access is on by default). `ATLASSIAN_OAUTH_ACCESS_TOKEN` is set as a real environment variable on your machine and referenced by `.mcp.json` as `${VAR}` — never written to this file or committed anywhere. `atlassian_login` below is just your email, not a secret — it exists because the bearer token authenticates as a shared service account, not you, so "assigned to me" queries need your real identity explicitly.
 
 ```json
 {
   "connectors": {
     "mcp-atlassian": {
-      "jira_username": "",
-      "confluence_username": ""
+      "atlassian_login": ""
     }
   },
   "sap": {

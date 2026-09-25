@@ -9,14 +9,13 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 
 ## Fields to manage in `.sdlc/config.json`
 
-`sap` is **top-level**, a sibling of `connectors` — not nested inside it. This is the authoritative shape: `hooks/guard_sap_mcp.py::find_system_mode()` reads `config["sap"]["systems"]` directly, so it must match exactly.
+`sap` is **top-level**. This is the authoritative shape: `hooks/guard_sap_mcp.py::find_system_mode()` reads `config["sap"]["systems"]` directly, so it must match exactly. `mcp-atlassian`'s own auth needs zero fields in `.sdlc/config.json` (OAuth BYOT, see below) — but `connectors.mcp-atlassian.atlassian_login` still exists, for a different reason: see "Atlassian connector" below.
 
 ```json
 {
   "connectors": {
     "mcp-atlassian": {
-      "jira_username": "",
-      "confluence_username": ""
+      "atlassian_login": ""
     }
   },
   "sap": {
@@ -38,7 +37,7 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 ## Steps
 
 1. Read the existing `.sdlc/config.json` if present; show the user what's already set vs. what's still missing.
-2. Ask for missing values conversationally, grouped by section (connectors, products, prerequisites, deployment mode, diagram tool, model tiers, screenshot mode, git usage, handoff default) — don't ask everything as one giant form.
+2. Ask for missing values conversationally, grouped by section (Jira/Atlassian login, products, prerequisites, deployment mode, diagram tool, model tiers, screenshot mode, git usage, handoff default) — don't ask everything as one giant form.
 3. Re-run the prerequisite check from `onboarding-guide/references/prerequisites.md` if the user wants to change tooling.
 4. Write the merged config back to `.sdlc/config.json` — shared across every ticket, not ticket-scoped.
 5. If a ticket is currently active (`.sdlc/active_ticket.json`), append an entry summarizing what changed to that ticket's `timeline.jsonl`. If no ticket is active yet (e.g. this is the project's first-ever `/vinsap:config` run before any `/vinsap:onboard`), skip this — there's no ticket-scoped file to write to yet.
@@ -65,18 +64,21 @@ This is about **local project tracking** of VinSAP's own working files, not the 
 
 ## Atlassian connector (mcp-atlassian)
 
-This plugin ships `mcp-atlassian` (sooperset/mcp-atlassian, run via `uvx`) in `.mcp.json`.
+This plugin ships `mcp-atlassian` (sooperset/mcp-atlassian, run via `uvx`) in `.mcp.json`, using **OAuth 2.0 BYOT (bring-your-own-token)** auth — the right mode for Atlassian Cloud, as opposed to `JIRA_PERSONAL_TOKEN`/`CONFLUENCE_PERSONAL_TOKEN` (Server/Data Center only, not usable against `*.atlassian.net`).
 
-**Hardcoded Vincit-wide constants** (in `.mcp.json` directly, committed, not asked in `/vinsap:config`): `JIRA_URL` (`https://vincit.atlassian.net`), `JIRA_PROJECTS_FILTER` (`ADSD`), `CONFLUENCE_URL` (`https://vincit.atlassian.net/wiki`), `CONFLUENCE_SPACES_FILTER` (`ADSD`), `READ_ONLY_MODE` (`false`). These are the same for every engagement using this plugin — not secrets, safe to commit. **`READ_ONLY_MODE: false` means write access to Jira/Confluence is enabled by default for everyone using this plugin** — worth surfacing to the user the first time `/vinsap:config` runs, since it's a real capability, not just bookkeeping. If a future engagement needs a different Jira project, Atlassian site, or read-only posture, update `.mcp.json` directly rather than trying to make these configurable per-project.
+**Hardcoded Vincit-wide constants** (in `.mcp.json` directly, committed, not asked in `/vinsap:config`): `ATLASSIAN_OAUTH_CLOUD_ID` (`b09660f1-0129-41e7-90fc-442d84f44c00` — Vincit's Atlassian Cloud ID, found via `curl https://vincit.atlassian.net/_edge/tenant_info`, not a secret), `JIRA_PROJECTS_FILTER` (`ADSD`), `CONFLUENCE_SPACES_FILTER` (`ADSD`), `READ_ONLY_MODE` (`false`). Same for every engagement using this plugin. **`READ_ONLY_MODE: false` means write access to Jira/Confluence is enabled by default** — worth surfacing to the user the first time `/vinsap:config` runs. If a future engagement needs a different Atlassian site/project/space, update `.mcp.json` directly.
 
-**Only the two usernames stay environment-variable-driven**, resolved from the *actual process environment* at launch, not from `.sdlc/config.json`:
+**Only `ATLASSIAN_OAUTH_ACCESS_TOKEN` is environment-variable-driven** — the actual secret, resolved from the *actual process environment* at launch, not from `.sdlc/config.json`:
 
-1. Ask the user for the remaining **non-secret** fields — Jira username, Confluence username — and write those into `connectors.mcp-atlassian` in `.sdlc/config.json` as shown above.
-2. Tell the user to set the matching environment variables in their own shell profile (or a local `.env` the project's `.gitignore` excludes) so `.mcp.json`'s `${VAR}` placeholders resolve at launch:
-   - `VINSAP_JIRA_USERNAME`, `VINSAP_CONFLUENCE_USERNAME`
-   - `JIRA_API_TOKEN`, `CONFLUENCE_API_TOKEN` — **the two actual secrets**
-3. **Never write `JIRA_API_TOKEN` or `CONFLUENCE_API_TOKEN` into `.sdlc/config.json`, any ticket's `timeline.jsonl`, any output file, or anything this skill controls.** If the user pastes a token into chat, don't echo it back or persist it anywhere — just confirm they've set it as an environment variable and move on. This applies even though `.sdlc/` is already gitignored in the plugin's own repo — the *consuming* project may not have that protection unless `/vinsap:onboard`/`/vinsap:config` also adds it (see step 4).
-4. If the consuming project doesn't already gitignore `.sdlc/`, add it — belt-and-suspenders against accidentally committing anything sensitive that ends up there.
+1. Tell the user to set `ATLASSIAN_OAUTH_ACCESS_TOKEN` in their own shell profile (or a local `.env` the project's `.gitignore` excludes).
+2. **Token refresh is the user's responsibility** — BYOT tokens aren't auto-refreshed by `mcp-atlassian`. If Jira/Confluence calls start failing with auth errors, the first thing to check is whether this token has expired and needs re-exporting, not a config bug.
+3. **Never write `ATLASSIAN_OAUTH_ACCESS_TOKEN` into `.sdlc/config.json`, any ticket's `timeline.jsonl`, any output file, or anything this skill controls.** If the user pastes it into chat, don't echo it back or persist it anywhere — just confirm they've set it as an environment variable and move on. The *consuming* project may not already gitignore `.sdlc/`, unlike the plugin's own repo — add it if missing (belt-and-suspenders, even though no secret is meant to land there).
+
+### Why `connectors.mcp-atlassian.atlassian_login` still exists
+
+The bearer token authenticates as an **Atlassian Service Account** (`accountType: "app"`), not as the human running this session — confirmed live: `curl .../rest/api/3/myself` with this token returns `accountType: "app"`, a service identity, not a personal one. That means Jira's `assignee = currentUser()` / Confluence's `creator = currentUser()` resolve to the **service account**, not to the person actually using VinSAP — those queries would silently return nothing useful for "my tickets."
+
+So: ask the user for their own Jira/Atlassian login (their email address, e.g. `firstname.lastname@vincit.fi`) and store it as `connectors.mcp-atlassian.atlassian_login` — not a secret, just an email, fine to persist. Every skill that needs to query "tickets assigned to me" or similar (`onboarding-guide`'s Jira-ticket pull, `scope-builder`, etc.) should use `assignee = "<atlassian_login>"` explicitly in JQL/CQL instead of `currentUser()`. If this field is unset when such a query is needed, ask for it then rather than guessing or silently using `currentUser()` (which would be wrong).
 
 ## SAP system discovery (not static)
 
