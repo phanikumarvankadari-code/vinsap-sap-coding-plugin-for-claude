@@ -109,6 +109,8 @@ VinSAP works across **many tickets in one project**. Setup is two-phase: connect
 
 ## Commands
 
+Pre-rename names still work as legacy aliases: `/vinsap:onboard` → `/vinsap:intent`, `/vinsap:scope` → `/vinsap:spec`, `/vinsap:milestones` → `/vinsap:plan`, `/vinsap:develop` → `/vinsap:build`.
+
 <details>
 <summary><b>/vinsap:config</b> — connectors, system modes, deployment mode, preferences</summary>
 
