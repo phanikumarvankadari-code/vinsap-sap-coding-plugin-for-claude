@@ -49,6 +49,39 @@ It talks to your SAP systems through the **Vincit SAP MCP** (a VS Code extension
 
 `/vinsap:intent` (alias `/vinsap:init`) checks these and offers install guidance for anything missing.
 
+### Configuring the Atlassian Service Account token
+
+`ATLASSIAN_OAUTH_ACCESS_TOKEN` must exist in your environment **before** Claude Code launches — setting it in a different terminal afterward won't be picked up, so restart your Claude Code session once it's set.
+
+**Get the value from 1Password first** — vault **"AI driven SAP development"**, item **"ai-driven-sap-RW API token"**. Copy the token value; never paste it into chat, a config file, or anything committed.
+
+**macOS / Linux (zsh, the default shell):**
+```bash
+echo 'export ATLASSIAN_OAUTH_ACCESS_TOKEN="<paste the token from 1Password>"' >> ~/.zshrc
+source ~/.zshrc
+```
+(Using bash instead of zsh? Use `~/.bashrc` or `~/.bash_profile` instead of `~/.zshrc`.)
+
+**Windows (PowerShell):**
+```powershell
+[System.Environment]::SetEnvironmentVariable('ATLASSIAN_OAUTH_ACCESS_TOKEN', '<paste the token from 1Password>', 'User')
+```
+Persists across sessions for your user account. Close and reopen PowerShell/Claude Code afterward. Prefer it scoped to PowerShell only? Add `$env:ATLASSIAN_OAUTH_ACCESS_TOKEN = "<token>"` to your `$PROFILE` script instead.
+
+**Windows (Command Prompt):**
+```cmd
+setx ATLASSIAN_OAUTH_ACCESS_TOKEN "<paste the token from 1Password>"
+```
+Same persistence as the PowerShell method; also needs a new terminal window to take effect.
+
+**Verify it worked**, either OS:
+```bash
+echo $ATLASSIAN_OAUTH_ACCESS_TOKEN
+```
+Then check `/mcp` inside Claude Code lists `mcp-atlassian` as connected.
+
+Token refresh is your responsibility — BYOT tokens aren't auto-refreshed, so re-export a fresh value from 1Password if Jira/Confluence calls start failing with auth errors.
+
 ## Installing
 
 ```
@@ -97,7 +130,7 @@ VinSAP works across **many tickets in one project**. Setup is two-phase: connect
 
 `/vinsap:deep-review` is **optional**, not a hard gate. The first time `/vinsap:ship` runs for a ticket, it asks whether to require deep-review before shipping — **Always** / **Ask each time** / **Skip** — and remembers that choice in the ticket's `state.json` for later milestones, without re-asking.
 
-`/vinsap:status` and `/vinsap:handoff` work at any point, on the active ticket. `/vinsap:switch <TICKET-ID>` jumps back to a ticket you already started, without re-running `/vinsap:intent`.
+`/vinsap:status`, `/vinsap:handoff`, and `/vinsap:compact` work at any point, on the active ticket. `/vinsap:switch <TICKET-ID>` jumps back to a ticket you already started, without re-running `/vinsap:intent`.
 
 ## The pipeline, at a glance
 
@@ -105,11 +138,11 @@ VinSAP works across **many tickets in one project**. Setup is two-phase: connect
 
 *(diagram above reflects the pre-rename command names — an updated version is in progress)*
 
-`/vinsap:test` failures loop internally (auto-fix + re-test) up to a retry cap before flagging the milestone back to `/vinsap:build` for the user to weigh in — `/vinsap:status` and `/vinsap:handoff` are callable at any point, not just at the phase boundaries shown.
+`/vinsap:test` failures loop internally (auto-fix + re-test) up to a retry cap before flagging the milestone back to `/vinsap:build` for the user to weigh in — `/vinsap:status`, `/vinsap:handoff`, and `/vinsap:compact` are callable at any point, not just at the phase boundaries shown.
 
 ## Commands
 
-Pre-rename names still work as legacy aliases: `/vinsap:onboard` → `/vinsap:intent`, `/vinsap:scope` → `/vinsap:spec`, `/vinsap:milestones` → `/vinsap:plan`, `/vinsap:develop` → `/vinsap:build`.
+Pre-rename names still work as legacy aliases: `/vinsap:onboard` → `/vinsap:intent`, `/vinsap:scope` → `/vinsap:spec`, `/vinsap:milestones` → `/vinsap:plan`, `/vinsap:develop` → `/vinsap:build`. Run `/vinsap:help` (or `/vinsap:help <command>`) any time for this same reference with examples, in-session.
 
 <details>
 <summary><b>/vinsap:config</b> — connectors, system modes, deployment mode, preferences</summary>
@@ -143,7 +176,7 @@ To resume a ticket you already started instead of creating a new one, use `/vins
 <details>
 <summary><b>/vinsap:switch</b> — change which ticket is active</summary>
 
-`/vinsap:switch <TICKET-ID>` points subsequent commands at a different, already-started ticket — without creating anything. Errors (rather than creating the folder) if that ticket doesn't exist; use `/vinsap:intent` for a genuinely new one. Shows a quick status summary of the ticket you switch into.
+`/vinsap:switch <TICKET-ID>` points subsequent commands at a different, already-started ticket — without creating anything. Errors (rather than creating the folder) if that ticket doesn't exist; use `/vinsap:intent` for a genuinely new one. Shows a quick status summary of the ticket you switch into, and if that ticket has a saved context in `outputs/handoff/` (from `/vinsap:handoff` or `/vinsap:compact`), loads the most recent one into the conversation so the session isn't starting cold.
 
 </details>
 
@@ -227,6 +260,22 @@ Shows the active ticket's stage/milestone progress by default, or `/vinsap:statu
 <summary><b>/vinsap:handoff</b> — active ticket's timeline → markdown summary, callable anytime</summary>
 
 Reads that ticket's full `timeline.jsonl` (every meaningful action any skill has taken on it) and formats a narrative markdown summary: what happened, key decisions, code changes, current status, open items. **Always** saves it into that ticket's `outputs/handoff/` — this is the ticket's own record, not a destination choice. Then asks whether to also publish it externally (Jira comment, Confluence, or skip) — always confirming rather than assuming.
+
+</details>
+
+<details>
+<summary><b>/vinsap:compact</b> — save a status snapshot before running native /compact, callable anytime</summary>
+
+Same summary logic as `/vinsap:handoff` — reads the active ticket's `timeline.jsonl` + `state.json` and writes a narrative snapshot to `outputs/handoff/<timestamp>-precompact.md` — but always local, never asks about publishing to Jira/Confluence. This is a fast, no-questions-asked checkpoint, not a deliberate handoff.
+
+**Can't trigger Claude Code's native `/compact` itself** — a plugin command runs as agent instructions inside the current turn, and compaction is a harness-level action. It just tells you the snapshot's saved and it's safe to run `/compact` yourself right after.
+
+</details>
+
+<details>
+<summary><b>/vinsap:help</b> — command reference with examples, in-session</summary>
+
+Prints the same reference as this README's Commands section — what each command does, an example, and the choices it asks you to make. `/vinsap:help <command>` shows just one entry.
 
 </details>
 

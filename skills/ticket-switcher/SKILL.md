@@ -13,7 +13,8 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 2. Verify `tickets/<TICKET-ID>/` exists. If it doesn't, **don't create it** — tell the user to run `/vinsap:intent` instead to start it as a new ticket, or check for a typo.
 3. Write `.sdlc/active_ticket.json`: `{"active_ticket": "<TICKET-ID>", "last_switched": "<now>"}`.
 4. Read `tickets/<TICKET-ID>/state.json` if it exists and summarize where that ticket currently stands (stage, milestone progress) — same shape `/vinsap:status` prints — so the user immediately sees what they're switching into.
-5. No timeline entry needed for the switch itself in the *target* ticket (switching isn't a development action on that ticket) — but do log it lightly if useful for audit, at the caller's discretion.
+5. **Load saved context, if any**: list `tickets/<TICKET-ID>/outputs/handoff/` (populated by `/vinsap:handoff` and `/vinsap:compact`). If it has entries, read the most recent by filename timestamp and bring its narrative into the current conversation — what happened, key decisions, open items — so this session isn't starting cold on a ticket that already has history. Tell the user which file you loaded and its timestamp. If the folder is empty or missing, say there's no saved context to load rather than fabricating a summary from `state.json` alone.
+6. No timeline entry needed for the switch itself in the *target* ticket (switching isn't a development action on that ticket) — but do log it lightly if useful for audit, at the caller's discretion.
 
 ## Notes
 

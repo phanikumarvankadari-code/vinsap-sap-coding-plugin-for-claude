@@ -53,13 +53,15 @@ VinSAP works across **many tickets in one project**. Connectors/systems/preferen
 10. **`/vinsap:ship`** — deploy-readiness checklist, applies the deep-review preference, writes `outputs/ship.md`. Doesn't release/deploy anything itself. Cadence depends on milestone type: **ABAP/mixed** — per milestone, right after `test` passes, transport staged incrementally. **Fiori/UI5** — once, after every Fiori milestone in the ticket is built/tested, since app deployment isn't incremental
 11. **`/vinsap:docs`** — generates Functional/Technical/Test documents from Vincit templates, optionally publishes to Confluence (new pages default into the [ADSD documentation folder](https://vincit.atlassian.net/wiki/spaces/ADSD/folder/10682105864)); every publish/update also comments the page URL on the ticket's Jira issue
 
-Three commands work at any point, on the active ticket:
+These commands work at any point, on the active ticket:
 
 - **`/vinsap:status`** — plain progress view of the active ticket, or `/vinsap:status all` to list every ticket
-- **`/vinsap:switch <TICKET-ID>`** — jump to a ticket already started, without re-running `/vinsap:intent`
+- **`/vinsap:switch <TICKET-ID>`** — jump to a ticket already started, without re-running `/vinsap:intent`; loads its most recent saved context (`/vinsap:handoff`/`/vinsap:compact` output) into the conversation if one exists
+- **`/vinsap:handoff`** — narrative summary of everything that happened on the active ticket, always saved into that ticket's `outputs/handoff/`, and optionally also published to Jira or Confluence
+- **`/vinsap:compact`** — saves that same local status snapshot (no publish question), then tells you it's safe to run Claude Code's native `/compact` — can't trigger it itself, that's a separate manual step
+- **`/vinsap:help`** — this same command reference, in-session
 
 Pre-rename names still work as legacy aliases: `/vinsap:onboard` → `/vinsap:intent`, `/vinsap:scope` → `/vinsap:spec`, `/vinsap:milestones` → `/vinsap:plan`, `/vinsap:develop` → `/vinsap:build`.
-- **`/vinsap:handoff`** — narrative summary of everything that happened on the active ticket, always saved into that ticket's `outputs/handoff/`, and optionally also published to Jira or Confluence
 
 ## System modes and guardrails
 

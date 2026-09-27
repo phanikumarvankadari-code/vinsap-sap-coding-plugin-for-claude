@@ -1,6 +1,6 @@
 ---
 name: session-recorder
-description: Use for /vinsap:handoff — reads the active ticket's full timeline, formats a narrative markdown summary, always saves a copy into the ticket's outputs/handoff/, and optionally also publishes to Jira or Confluence.
+description: Use for /vinsap:handoff — reads the active ticket's full timeline, formats a narrative markdown summary, always saves a copy into the ticket's outputs/handoff/, and optionally also publishes to Jira or Confluence. Also powers /vinsap:compact's local-only snapshot (steps 1-3 below, skipping the publish step).
 ---
 
 # Session Recorder
