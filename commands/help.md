@@ -70,7 +70,7 @@ Plain-text progress view. `/vinsap:status all` lists every ticket. No choices.
 - Example: `/vinsap:status` or `/vinsap:status all`
 
 ### `/vinsap:switch <TICKET-ID>`
-Jumps to a ticket you already started, without re-running `/vinsap:intent`.
+Jumps to a ticket you already started, without re-running `/vinsap:intent`. Loads its most recent saved context (from `outputs/handoff/`, whether written by `/vinsap:handoff` or `/vinsap:compact`) into the conversation, if one exists.
 - Example: `/vinsap:switch ADSD-1301`
 - Choices you make: which ticket, if you don't name one — it lists what's available.
 

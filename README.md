@@ -176,7 +176,7 @@ To resume a ticket you already started instead of creating a new one, use `/vins
 <details>
 <summary><b>/vinsap:switch</b> — change which ticket is active</summary>
 
-`/vinsap:switch <TICKET-ID>` points subsequent commands at a different, already-started ticket — without creating anything. Errors (rather than creating the folder) if that ticket doesn't exist; use `/vinsap:intent` for a genuinely new one. Shows a quick status summary of the ticket you switch into.
+`/vinsap:switch <TICKET-ID>` points subsequent commands at a different, already-started ticket — without creating anything. Errors (rather than creating the folder) if that ticket doesn't exist; use `/vinsap:intent` for a genuinely new one. Shows a quick status summary of the ticket you switch into, and if that ticket has a saved context in `outputs/handoff/` (from `/vinsap:handoff` or `/vinsap:compact`), loads the most recent one into the conversation so the session isn't starting cold.
 
 </details>
 
