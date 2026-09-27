@@ -78,3 +78,8 @@ Jumps to a ticket you already started, without re-running `/vinsap:intent`.
 Narrative summary of everything that happened on the active ticket. Always saved locally; optionally also published.
 - Example: `/vinsap:handoff`
 - Choices you make: publish externally as a Jira comment, a Confluence page, or skip (local file is always saved either way).
+
+### `/vinsap:compact`
+Saves a status snapshot of the active ticket (same summary logic as `/vinsap:handoff`, always local, never asks about publishing), then tells you it's safe to run Claude Code's native `/compact`. **Can't trigger native `/compact` itself** — that's a separate, manual step you run right after.
+- Example: `/vinsap:compact` then `/compact`
+- Choices you make: none — it's a fast, no-questions-asked checkpoint by design.

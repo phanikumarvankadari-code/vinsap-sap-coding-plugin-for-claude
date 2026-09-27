@@ -130,7 +130,7 @@ VinSAP works across **many tickets in one project**. Setup is two-phase: connect
 
 `/vinsap:deep-review` is **optional**, not a hard gate. The first time `/vinsap:ship` runs for a ticket, it asks whether to require deep-review before shipping — **Always** / **Ask each time** / **Skip** — and remembers that choice in the ticket's `state.json` for later milestones, without re-asking.
 
-`/vinsap:status` and `/vinsap:handoff` work at any point, on the active ticket. `/vinsap:switch <TICKET-ID>` jumps back to a ticket you already started, without re-running `/vinsap:intent`.
+`/vinsap:status`, `/vinsap:handoff`, and `/vinsap:compact` work at any point, on the active ticket. `/vinsap:switch <TICKET-ID>` jumps back to a ticket you already started, without re-running `/vinsap:intent`.
 
 ## The pipeline, at a glance
 
@@ -138,7 +138,7 @@ VinSAP works across **many tickets in one project**. Setup is two-phase: connect
 
 *(diagram above reflects the pre-rename command names — an updated version is in progress)*
 
-`/vinsap:test` failures loop internally (auto-fix + re-test) up to a retry cap before flagging the milestone back to `/vinsap:build` for the user to weigh in — `/vinsap:status` and `/vinsap:handoff` are callable at any point, not just at the phase boundaries shown.
+`/vinsap:test` failures loop internally (auto-fix + re-test) up to a retry cap before flagging the milestone back to `/vinsap:build` for the user to weigh in — `/vinsap:status`, `/vinsap:handoff`, and `/vinsap:compact` are callable at any point, not just at the phase boundaries shown.
 
 ## Commands
 
@@ -260,6 +260,22 @@ Shows the active ticket's stage/milestone progress by default, or `/vinsap:statu
 <summary><b>/vinsap:handoff</b> — active ticket's timeline → markdown summary, callable anytime</summary>
 
 Reads that ticket's full `timeline.jsonl` (every meaningful action any skill has taken on it) and formats a narrative markdown summary: what happened, key decisions, code changes, current status, open items. **Always** saves it into that ticket's `outputs/handoff/` — this is the ticket's own record, not a destination choice. Then asks whether to also publish it externally (Jira comment, Confluence, or skip) — always confirming rather than assuming.
+
+</details>
+
+<details>
+<summary><b>/vinsap:compact</b> — save a status snapshot before running native /compact, callable anytime</summary>
+
+Same summary logic as `/vinsap:handoff` — reads the active ticket's `timeline.jsonl` + `state.json` and writes a narrative snapshot to `outputs/handoff/<timestamp>-precompact.md` — but always local, never asks about publishing to Jira/Confluence. This is a fast, no-questions-asked checkpoint, not a deliberate handoff.
+
+**Can't trigger Claude Code's native `/compact` itself** — a plugin command runs as agent instructions inside the current turn, and compaction is a harness-level action. It just tells you the snapshot's saved and it's safe to run `/compact` yourself right after.
+
+</details>
+
+<details>
+<summary><b>/vinsap:help</b> — command reference with examples, in-session</summary>
+
+Prints the same reference as this README's Commands section — what each command does, an example, and the choices it asks you to make. `/vinsap:help <command>` shows just one entry.
 
 </details>
 
