@@ -23,8 +23,12 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 5. Flag the drafted document for **UX review** before finalizing — surface it to the user explicitly as a review checkpoint, don't silently mark it done.
 6. Save the filled document to `tickets/<active>/outputs/docs/`.
 7. Ask whether to publish to **Confluence** via the `mcp-atlassian` MCP connector:
-   - **Create a new page** — defaults to `documentation.confluence_parent_id` from `.sdlc/config.json` (the ADSD space's documentation folder) as the parent, so it nests there rather than at the space root. Confirm with the user, don't silently assume a different parent.
-   - **Update an existing page** (search/select) instead, if one already exists for this ticket/doc.
+   - **Ticket folder first** — every document for a ticket lives in one Confluence folder named after the ticket ID (e.g. `ADSD-6`), placed under `documentation.confluence_parent_id` from `.sdlc/config.json` (the ADSD space's documentation folder). Confirm the parent with the user, don't silently assume a different one.
+     - Reuse `confluence_folder_id` from `tickets/<active>/state.json` if set. Otherwise search the parent's children for a folder/page with that exact title, and only create it if none exists — never create a duplicate.
+     - Create it as a Confluence folder if the connector supports that; if not, fall back to an empty container page with the same title.
+     - Save its ID to `tickets/<active>/state.json` → `confluence_folder_id` so later docs (and `session-recorder` handoffs) land in the same place.
+   - **Create a new page** — parent is always the ticket folder, never the documentation folder or space root directly. Title it `<TICKET-ID> <Doc type> Document` (e.g. `ADSD-6 Functional Document`) so titles stay unique across the space.
+   - **Update an existing page** (search/select inside the ticket folder) instead, if one already exists for this ticket/doc. If the existing page sits outside the ticket folder, offer to move it in.
    - Attach the generated file to that page.
    - **Every time a Confluence page is created or updated this way, add a comment on the ticket's Jira issue with that page's URL** (via `mcp-atlassian`) — creation gets a new comment, an update gets a fresh comment too (don't rely on the user finding an old link buried in history). Skip this if the ticket has no linked Jira issue (manually-dropped-input tickets).
 8. For the Test document, follow `.sdlc/config.json` → `documentation.screenshot_mode`:

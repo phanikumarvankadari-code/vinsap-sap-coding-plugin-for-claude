@@ -61,7 +61,7 @@ Deploy-readiness checklist. ABAP/mixed milestones ship one at a time; Fiori/UI5 
 ### `/vinsap:docs`
 Interactively generates a Functional, Technical, or Test document, optionally publishes to Confluence.
 - Example: `/vinsap:docs`
-- Choices you make: which document type; which sections to include (checkbox list, all on by default, can add custom ones); anything it can't derive from `spec.md`/`plan.md`/code/tests; whether to publish to Confluence (new page or update existing) — publishing auto-comments the page link on the linked Jira issue.
+- Choices you make: which document type; which sections to include (checkbox list, all on by default, can add custom ones); anything it can't derive from `spec.md`/`plan.md`/code/tests; whether to publish to Confluence (new page or update existing, always inside a folder named after the ticket ID, created on first publish) — publishing auto-comments the page link on the linked Jira issue.
 
 **Anytime, on the active ticket:**
 

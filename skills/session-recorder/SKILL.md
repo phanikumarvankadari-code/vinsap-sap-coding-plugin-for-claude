@@ -20,7 +20,7 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 3. **Always** save the markdown to `tickets/<active>/outputs/handoff/<timestamp>-handoff.md` — this is unconditional, not a destination choice. This is what keeps the ticket's own record of what happened, independent of anything published externally.
 4. Then ask the user whether to **also** publish it externally, offering `handoff.destination` from `.sdlc/config.json` as the default but always confirming/allowing override or skipping:
    - **Jira ticket comment** — via `mcp-atlassian` MCP, post to the linked ticket
-   - **Confluence page** — via `mcp-atlassian` MCP, create new or update existing, if configured
+   - **Confluence page** — via `mcp-atlassian` MCP, create new or update existing, if configured. Put it inside the ticket's Confluence folder (named after the ticket ID, under `documentation.confluence_parent_id`), using the same find-or-create rule as `doc-generator` step 7 and `confluence_folder_id` from `tickets/<active>/state.json`
    - **None** — the local file in `tickets/<active>/outputs/handoff/` is enough this time
 5. Append a `tickets/<active>/timeline.jsonl` entry recording that a handoff was produced (`action: "handoff_created"`), noting whether it was also published externally and where.
 
