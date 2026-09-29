@@ -38,6 +38,8 @@ Same persistence as the PowerShell method above; also requires a new terminal wi
 
 In every case: verify with the `echo`/check command in the table above, then confirm `/mcp` inside Claude Code lists `mcp-atlassian` as connected.
 
+**If Jira calls work but Confluence calls fail with 401**: this is a token **scope** mismatch, not a config or env-var problem — the token authenticating successfully in general (e.g. `myself` returning 200) doesn't mean it has Confluence scopes. OAuth 2.0 BYOT tokens have their scopes fixed at issuance, so this can only be fixed by whoever manages the Service Account reissuing the token with `read:confluence-content.all`, `write:confluence-content`, and `read:confluence-space.summary` included. Don't re-check `.mcp.json` or the cloud ID for this specific symptom.
+
 ## Flow
 
 1. Run each check command.

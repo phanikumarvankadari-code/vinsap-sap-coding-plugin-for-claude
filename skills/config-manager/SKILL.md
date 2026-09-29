@@ -71,6 +71,12 @@ This plugin ships `mcp-atlassian` (sooperset/mcp-atlassian, run via `uvx`) in `.
 
 1. Tell the user to set `ATLASSIAN_OAUTH_ACCESS_TOKEN` in their own shell profile (or a local `.env` the project's `.gitignore` excludes).
 2. **Token refresh is the user's responsibility** — BYOT tokens aren't auto-refreshed by `mcp-atlassian`. If Jira/Confluence calls start failing with auth errors, the first thing to check is whether this token has expired and needs re-exporting, not a config bug.
+
+**Known limitation: Jira works, Confluence returns 401** — confirmed live (2026-09-29). The token authenticates fine in general (e.g. a raw `curl` against `.../wiki/rest/api/space` with it returns 200), and `mcp-atlassian`'s Jira calls work — but its Confluence calls 401. This is a **scope mismatch on the token itself**, not a `.mcp.json`/env-var config bug: with OAuth 2.0 BYOT, the token's scopes are fixed at issuance by whoever manages the Service Account, not something the plugin or `/vinsap:config` can grant. If Confluence calls fail while Jira calls succeed, the fix is asking the Service Account owner to **reissue the token** with Confluence scopes included:
+   - `read:confluence-content.all`
+   - `write:confluence-content`
+   - `read:confluence-space.summary`
+   Don't spend time re-checking `.mcp.json`, the cloud ID, or the env var when you see this exact symptom — it's the token's scope grant, full stop.
 3. **Never write `ATLASSIAN_OAUTH_ACCESS_TOKEN` into `.sdlc/config.json`, any ticket's `timeline.jsonl`, any output file, or anything this skill controls.** If the user pastes it into chat, don't echo it back or persist it anywhere — just confirm they've set it as an environment variable and move on. The *consuming* project may not already gitignore `.sdlc/`, unlike the plugin's own repo — add it if missing (belt-and-suspenders, even though no secret is meant to land there).
 
 ### Why `connectors.mcp-atlassian.atlassian_login` still exists
