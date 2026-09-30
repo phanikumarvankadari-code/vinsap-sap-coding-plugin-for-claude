@@ -37,7 +37,17 @@ Follow `../_shared/context-contract.md` for read/write conventions.
 
 1. Read the existing `.sdlc/config.json` if present; show the user what's already set vs. what's still missing.
 2. Ask for missing values conversationally, grouped by section (Jira/Atlassian login, prerequisites, deployment mode, diagram tool, model tiers, screenshot mode, git usage, handoff default) — don't ask everything as one giant form. There's no project-wide "products in scope" field here anymore — that turned out unused in practice; functional/solution area is now asked **per ticket** in `scope-builder` instead (see its `functional_areas` step), since it varies ticket to ticket and actually feeds into something: pre-filling the `Z*` package-search prefix in `abap-developer`.
-3. Re-run the prerequisite check from `onboarding-guide/references/prerequisites.md` if the user wants to change tooling.
+3. **Always check these five at the start of every `/vinsap:config` run** (not just when the user asks to change tooling):
+   - **Claude Code CLI**: `claude --version`. Missing → point to the install/quickstart link in `onboarding-guide/references/prerequisites.md` (can't self-install the thing it's running inside of).
+   - **Node.js**: `node --version`. Missing → offer the install command from `onboarding-guide/references/prerequisites.md`, ask before running it.
+   - **Python 3**: `python3 --version`. Missing → offer install guidance the same way.
+   - **`uv`/`uvx`**: `uvx --version`. Missing → offer install guidance the same way.
+   - **`ATLASSIAN_OAUTH_ACCESS_TOKEN` presence** — macOS/Linux: `echo $ATLASSIAN_OAUTH_ACCESS_TOKEN`; Windows: `echo %ATLASSIAN_OAUTH_ACCESS_TOKEN%` (cmd) or `[System.Environment]::GetEnvironmentVariable('ATLASSIAN_OAUTH_ACCESS_TOKEN','User')` (PowerShell). **Never ask for or accept the actual token value in chat.** If it's missing, offer to create an **empty placeholder** in the right place so the user only has to paste the value in themselves afterward:
+     - macOS/zsh: append `export ATLASSIAN_OAUTH_ACCESS_TOKEN=""` to `~/.zshrc`
+     - Windows PowerShell: `[System.Environment]::SetEnvironmentVariable('ATLASSIAN_OAUTH_ACCESS_TOKEN', '', 'User')`
+     - Windows cmd: `setx ATLASSIAN_OAUTH_ACCESS_TOKEN ""`
+     Then point them to 1Password (vault "AI driven SAP development", item "ai-driven-sap-RW API token") to get the real value, per `onboarding-guide/references/prerequisites.md` § "Configuring the Atlassian Service Account token" — and remind them a fresh Claude Code session is needed afterward, env vars aren't picked up mid-session.
+   - Re-run the full prerequisite check from `onboarding-guide/references/prerequisites.md` too if the user wants to change other tooling (draw.io, Playwright, Git CLI, etc.).
 4. Write the merged config back to `.sdlc/config.json` — shared across every ticket, not ticket-scoped.
 5. If a ticket is currently active (`.sdlc/active_ticket.json`), append an entry summarizing what changed to that ticket's `timeline.jsonl`. If no ticket is active yet (e.g. this is the project's first-ever `/vinsap:config` run before any `/vinsap:intent`), skip this — there's no ticket-scoped file to write to yet.
 
