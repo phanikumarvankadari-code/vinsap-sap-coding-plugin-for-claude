@@ -190,6 +190,8 @@ Run `/vinsap:config`. Every run checks Claude Code CLI, Node.js, Python 3, `uv`/
 
 ## 7. Run the pipeline, per ticket
 
+![VinSAP pipeline](../assets/process-flow.jpeg)
+
 ```
 /vinsap:intent           # or /vinsap:init — start a new ticket, capture the ask
 /vinsap:spec             # or /vinsap:analyze, /vinsap:start — clarify + finalize the spec
