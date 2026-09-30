@@ -1,3 +1,5 @@
+![VinSAP cover](../assets/cover.jpeg)
+
 <p align="center">
   <img src="../icon.svg" width="72" height="72" alt="Vincit" />
 </p>
@@ -159,20 +161,14 @@ Click ⏹ Stop. This also disconnects it from Claude Code going forward — but 
 
 ## 5. Install the VinSAP plugin (SAP AI-assisted development)
 
-### In Claude Code (desktop app or IDE)
-
 1. Open Claude Code in a new window.
 2. Type `/plugin` → **add marketplace**.
-3. **Install plugin**.
-
-### Or, from a terminal
-
 ```
-/plugin marketplace add phanikumarvankadari-code/vinsap-sap-coding-plugin-for-claude
-/plugin install vinsap
+phanikumarvankadari-code/vinsap-sap-coding-plugin-for-claude
 ```
+3. Go to the **Plugins** tab and **install** `vinsap`.
 
-Either way, you'll be asked to pick an install scope:
+You'll be asked to pick an install scope:
 
 | Scope | Meaning |
 |---|---|
