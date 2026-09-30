@@ -13,9 +13,9 @@ If the user names a specific command (e.g. `/vinsap:help build`), show only that
 **Once per project:**
 
 ### `/vinsap:config`
-Sets up connectors, SAP systems, deployment mode, and preferences — shared by every ticket.
+Sets up connectors, SAP systems, deployment mode, and preferences — shared by every ticket. Every run always checks Claude Code CLI, Node.js, Python 3, `uv`/`uvx`, and whether `ATLASSIAN_OAUTH_ACCESS_TOKEN` is set.
 - Example: `/vinsap:config`
-- Choices you make: which SAP systems map to `dev`/`quality`/`production` mode; `deployment_mode` (`mcp` push-directly vs `manual` generate-and-apply-yourself); diagram tool (`draw.io` vs `mermaid`); review model tiers (cheap model for `/vinsap:review`, stronger one for `/vinsap:deep-review`); screenshot mode (`auto` vs `manual`); handoff default destination; whether to track `tickets/`/`.sdlc/` in git; your Jira/Atlassian login email.
+- Choices you make: which SAP systems map to `dev`/`quality`/`production` mode; `deployment_mode` (`mcp` push-directly vs `manual` generate-and-apply-yourself); diagram tool (`draw.io` vs `mermaid`); review model tiers (cheap model for `/vinsap:review`, stronger one for `/vinsap:deep-review`); screenshot mode (`auto` vs `manual`); handoff default destination; whether to track `tickets/`/`.sdlc/` in git; your Jira/Atlassian login email; if the token env var is missing, whether to create an empty placeholder for you to fill in from 1Password.
 
 ### `/vinsap:intent` (alias `/vinsap:init`, legacy alias `/vinsap:onboard`)
 First run: checks prerequisites. Every run after: starts a new ticket and captures the ask into `intent.md`.
